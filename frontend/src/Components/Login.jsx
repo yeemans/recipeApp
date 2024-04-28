@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function Register() {
+function Login() {
     let [username, setUsername] = useState("");
     let [password, setPassword] = useState("");
     let [errorMessage, setErrorMessage] = useState("");
     let navigate = useNavigate();
     
-    async function registerUser() {
-        let result = await axios.post("http://localhost:5000/register", {
+    async function loginUser() {
+        let result = await axios.post("http://localhost:5000/login", {
             username: username,
             password: password,
         });
@@ -41,10 +41,9 @@ function Register() {
                     value={password} />
             </div>
 
-            <button onClick={(e) => registerUser()}>Register</button>
-
+            <button onClick={(e) => loginUser()}>Login</button>
         </div>
     )
 }
 
-export default Register;
+export default Login;
