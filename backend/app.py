@@ -38,6 +38,17 @@ def get_users():
     users_json = jsonify(users)
     return users_json
 
+@app.route('/sessions', methods=['GET'])
+def get_sessions():
+    # Create a cursor
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM sessions")
+    sessions = cur.fetchall()
+    cur.close()
+    sessions_json = jsonify(sessions)
+    return sessions_json
+
+
 @app.route('/register', methods=['POST'])
 def register():
     session_token = None
@@ -89,10 +100,48 @@ def logged_in():
     cur.close()
 
     if not session: 
+        print([username, session_token])
         print(f"session not found")
         return jsonify({'success': False})
     return jsonify({'success': True})
 
+@app.route("/get_bio", methods=['POST'])
+def get_bio():
+    data = json.loads(request.data)
+    username = data['username']
+    cur = conn.cursor()
+
+    if not check_user_exists(cur, username):
+        return jsonify({'success': False})
+    
+    bio = get_user_bio(cur, username)
+    cur.close()
+
+    return jsonify({'success': True, 'bio': bio})
+
+@app.route("/set_bio", methods=['POST'])
+def set_bio():
+    data = json.loads(request.data)
+    profile_owner = data['profile_owner']
+    editor = data['editor']
+    bio = data['bio']
+    session_token = data['session_token']
+    cur = conn.cursor()
+
+    # check if user is logged in
+    if not check_user_exists(cur, profile_owner) or not check_user_exists(cur, editor):
+        return jsonify({'success': False})
+    
+    if not get_session(cur, editor, session_token):
+        return jsonify({'success': False})
+    
+    # make sure editor is profile_owner
+    if get_user(cur, profile_owner) != get_user(cur, editor):
+        return jsonify({'success': False})
+    
+    update_bio(cur, get_user(cur, profile_owner), bio)
+    cur.close()
+    return jsonify({'success': True})
 
 def check_user_exists(cur, username):
     query = sql.SQL("SELECT 1 FROM users WHERE username = {}").format(sql.Literal(username))
@@ -109,12 +158,13 @@ def check_password(cur, username, login_password):
     return check_password_hash(database_password, login_password)
 
 def insert_new_user(cur, username, password):
+    BLANK_BIO = ""
     sql_insert = """
-    INSERT INTO users (username, password)
-    VALUES (%s, %s)
+    INSERT INTO users (username, password, bio)
+    VALUES (%s, %s, %s)
     RETURNING id
     """
-    cur.execute(sql_insert, (username, password))
+    cur.execute(sql_insert, (username, password, BLANK_BIO,))
     inserted_user_id = cur.fetchone()[0]
     return inserted_user_id
 
@@ -126,6 +176,15 @@ def get_user(cur, username):
     cur.execute(sql_insert, (username,))
     user_id = cur.fetchone()[0]
     return user_id
+
+def get_user_bio(cur, username):
+    sql_insert = """
+    SELECT bio FROM users 
+    WHERE username = %s
+    """
+    cur.execute(sql_insert, (username,))
+    user_bio = cur.fetchone()[0]
+    return user_bio
 
 def create_session(cur, inserted_user_id):
     sql_insert = """
@@ -142,7 +201,16 @@ def get_session(cur, username, session_token):
     WHERE user_id = %s AND session_token = %s
     """
     cur.execute(sql_insert, (get_user(cur, username), session_token,))
-    return cur.fetchone() is not None
+    return cur.fetchone() is not None # returns boolean for SELECT success
+
+def update_bio(cur, user_id, new_bio):
+    sql_insert = """
+    UPDATE users
+    SET bio = %s 
+    WHERE id = %s;
+    """
+    return cur.execute(sql_insert, (new_bio, user_id,))
+    # returns whether or not update success
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -17,7 +17,8 @@ function Login() {
         if (result["data"]["success"]) {
             // set session token and go to homepage
             sessionStorage.setItem("recipeAppSession", result["data"]["session_token"])
-            return navigate(`/home/${username}`);
+            sessionStorage.setItem("recipeAppUsername", username);
+            return navigate(`/profile/${username}`);
         }
         setErrorMessage(result["data"]["message"])
     }
@@ -42,6 +43,7 @@ function Login() {
             </div>
 
             <button onClick={(e) => loginUser()}>Login</button>
+            <button onClick={() => {return navigate('/register')} }>Register</button>
         </div>
     )
 }

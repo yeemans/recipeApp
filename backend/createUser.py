@@ -12,20 +12,13 @@ conn = psycopg2.connect(
 cur = conn.cursor()
 
 # Execute a command: this creates a new table
-cur.execute('DROP TABLE IF EXISTS users;')
+cur.execute('DROP TABLE IF EXISTS users CASCADE;')
 cur.execute('CREATE TABLE users (id serial PRIMARY KEY,'
                                  'username varchar (20) NOT NULL,'
-                                 'password varchar (300) NOT NULL);'
+                                 'password varchar (300) NOT NULL,'
+                                 'bio varchar (300) NOT NULL);'
             )
 
-# Insert data into the table
-print(cur.execute('INSERT INTO users (username, password)'
-            'VALUES (%s, %s)',
-            ('soup',
-             'spoon')
-            ))
-
 conn.commit()
-
 cur.close()
 conn.close()
