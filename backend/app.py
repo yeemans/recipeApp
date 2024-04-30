@@ -1,3 +1,5 @@
+# use conn.commit for queries that change the database
+
 from flask import Flask, jsonify
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -82,6 +84,7 @@ def login():
         return jsonify({'message': 'Wrong username/password', 'success': False})
     
     session_token = create_session(cur, get_user(cur, username))
+    conn.commit()
     cur.close()
     return jsonify({'session_token': session_token, 'success': True})
 
@@ -140,6 +143,7 @@ def set_bio():
         return jsonify({'success': False})
     
     update_bio(cur, get_user(cur, profile_owner), bio)
+    conn.commit()
     cur.close()
     return jsonify({'success': True})
 
