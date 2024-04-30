@@ -10,19 +10,19 @@ conn = psycopg2.connect(
 
 # Open a cursor to perform database operations
 cur = conn.cursor()
-create_recipes_table = """
-CREATE TABLE IF NOT EXISTS recipes (
+create_ingredients_table = """
+CREATE TABLE IF NOT EXISTS ingredients (
     id SERIAL PRIMARY KEY,
-    chef_id INT REFERENCES users(id) ON DELETE CASCADE,
-    title VARCHAR(40) NOT NULL,
-    cuisine VARCHAR(40) NOT NUll
+    recipe_id INT REFERENCES recipes(id) ON DELETE CASCADE,
+    name VARCHAR NOT NULL
 )
 """
 # Execute a command: this creates a new table
-cur.execute('DROP TABLE IF EXISTS recipes;')
-cur.execute(create_recipes_table)
+cur.execute('DROP TABLE IF EXISTS ingredients;')
+cur.execute(create_ingredients_table)
 
 
 conn.commit()
+
 cur.close()
 conn.close()

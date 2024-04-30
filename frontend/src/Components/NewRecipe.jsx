@@ -28,6 +28,11 @@ function NewRecipe() {
         setCurrStepImageLinks(newCurrStepImageLinks);
     }
 
+    function toggleStepEditor() {
+        if (stepEditorVisible === "hidden") setStepEditorVisible("visible");
+        else setStepEditorVisible("hidden");
+    }
+
     return(
         <div>
             <label htmlFor="title">Title:</label>
@@ -41,26 +46,30 @@ function NewRecipe() {
                 <ul>
                     {currStepImageLinks.map((imageLink) => (
                         <li>{imageLink}</li>
-
                     ))}
                 </ul>
 
             </div>
 
-            <button onClick={() => setStepEditorVisible("visible")}>Add Step</button>
-
-            {steps.map((step, stepIndex) => (
-                <div key={stepIndex}> {/* Wrap the content in a parent element */}
-                    <p>{step}</p> {/* Render the step paragraph */}
-                    
-                    {/* Iterate through the images of this step and render them */}
-                    {stepImageLinks[stepIndex].map((imageLink, imageIndex) => (
-                        <img class="stepImage" key={imageIndex} src={imageLink} alt={`Step ${stepIndex + 1} Image ${imageIndex + 1}`} />
+            <button onClick={() => toggleStepEditor()}>Add Step</button>
+            
+            <div> 
+                <h1>Recipe Preview</h1>
+                <h1>{title}</h1>
+                <ol>
+                    {steps.map((step, stepIndex) => (
+                        <li>
+                            <div key={stepIndex}> {/* Wrap the content in a parent element */}
+                                <p>{step}</p>
+                                {/* Iterate through the images of this step and render them */}
+                                {stepImageLinks[stepIndex].map((imageLink, imageIndex) => (
+                                    <img class="stepImage" key={imageIndex} src={imageLink} alt={`Step ${stepIndex + 1} Image ${imageIndex + 1}`} />
+                                ))}
+                            </div>
+                        </li>
                     ))}
-                </div>
-            ))}
-
-
+                </ol>
+            </div>
         </div>
     )
 }
