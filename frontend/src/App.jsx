@@ -3,6 +3,7 @@ import React from "react";
 import Register from './Components/Register.jsx';
 import Profile from "./Components/Profile.jsx";
 import Login from "./Components/Login.jsx";
+import NewRecipe from "./Components/NewRecipe.jsx";
 import './App.css';
 
 
@@ -14,6 +15,7 @@ function Root() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile/:username" element={<Profile />} />
+          <Route path="/newRecipe" element={<NewRecipe />} />
         </Routes>
       </div>
     </div>

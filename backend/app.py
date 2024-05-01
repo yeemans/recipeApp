@@ -1,3 +1,5 @@
+# use conn.commit for queries that change the database
+
 from flask import Flask, jsonify
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -48,6 +50,45 @@ def get_sessions():
     sessions_json = jsonify(sessions)
     return sessions_json
 
+@app.route('/recipes', methods=['GET'])
+def get_recipes():
+    # Create a cursor
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM recipes")
+    recipes = cur.fetchall()
+    cur.close()
+    recipes_json = jsonify(recipes)
+    return recipes_json
+
+@app.route('/ingredients', methods=['GET'])
+def get_ingredients():
+    # Create a cursor
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM ingredients")
+    ingredients = cur.fetchall()
+    cur.close()
+    ingredients_json = jsonify(ingredients)
+    return ingredients_json
+
+@app.route('/steps', methods=['GET'])
+def get_steps():
+    # Create a cursor
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM steps")
+    steps = cur.fetchall()
+    cur.close()
+    steps_json = jsonify(steps)
+    return steps_json
+
+@app.route('/allergens', methods=['GET'])
+def get_allergens():
+    # Create a cursor
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM allergens")
+    allergens = cur.fetchall()
+    cur.close()
+    allergens_json = jsonify(allergens)
+    return allergens_json
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -82,6 +123,7 @@ def login():
         return jsonify({'message': 'Wrong username/password', 'success': False})
     
     session_token = create_session(cur, get_user(cur, username))
+    conn.commit()
     cur.close()
     return jsonify({'session_token': session_token, 'success': True})
 
@@ -140,8 +182,103 @@ def set_bio():
         return jsonify({'success': False})
     
     update_bio(cur, get_user(cur, profile_owner), bio)
+    conn.commit()
     cur.close()
     return jsonify({'success': True})
+
+@app.route("/create_recipe", methods=['POST'])
+def create_recipe():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    chef_id = get_user(cur, data["username"])
+    title = data["title"]
+    cuisine = data["cuisine"]
+    is_public = data["is_public"]
+
+    sql_insert = """
+    INSERT INTO recipes (chef_id, title, cuisine, is_public)
+    VALUES (%s, %s, %s, %s)
+    RETURNING id
+    """
+
+    cur.execute(sql_insert, (chef_id, title, cuisine, is_public,))
+    recipe_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+    return {'success': True, 'recipe_id': recipe_id}
+
+@app.route("/create_ingredient", methods=['POST'])
+def create_ingredient():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+    name = data["name"]
+
+    sql_insert = """
+    INSERT INTO ingredients (recipe_id, name)
+    VALUES (%s, %s)
+    RETURNING id
+    """
+
+    cur.execute(sql_insert, (recipe_id, name,))
+    ingredient_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+    return {'success': True, 'ingredient_id': ingredient_id}
+
+@app.route("/create_step", methods=['POST'])
+def create_step():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+    html = data["html"]
+
+    sql_insert = """
+    INSERT INTO steps (recipe_id, html)
+    VALUES (%s, %s)
+    RETURNING id
+    """
+
+    cur.execute(sql_insert, (recipe_id, html,))
+    conn.commit()
+    cur.close()
+    return {'success': True}
+
+@app.route("/create_allergen", methods=['POST'])
+def create_allergen():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+    name = data["name"]
+
+    sql_insert = """
+    INSERT INTO allergens (recipe_id, name)
+    VALUES (%s, %s)
+    RETURNING id
+    """
+
+    cur.execute(sql_insert, (recipe_id, name,))
+    conn.commit()
+    cur.close()
+    return {'success': True}
+
+@app.route("/get_user_recipes", methods=['POST'])
+def get_all_user_recipes():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    username = data["username"]
+    user_id = get_user(cur, username) # get user id from username
+    get_only_public = data["get_only_public"]
+
+    print(get_only_public)
+    query = "SELECT * FROM recipes WHERE chef_id = %s"
+    if get_only_public:
+        query = "SELECT * FROM recipes WHERE chef_id = %s AND is_public = true"
+    cur.execute(query, (user_id,))
+    recipes = cur.fetchall()
+
+    cur.close()
+    return {"success": True, "recipes": recipes}
 
 def check_user_exists(cur, username):
     query = sql.SQL("SELECT 1 FROM users WHERE username = {}").format(sql.Literal(username))
