@@ -280,6 +280,66 @@ def get_all_user_recipes():
     cur.close()
     return {"success": True, "recipes": recipes}
 
+@app.route("/get_recipe_by_id", methods=['POST'])
+def get_recipe_by_id():
+    cur = conn.cursor()
+    sql_insert = """
+    SELECT * FROM recipes 
+    WHERE id = %s
+    """
+    data = json.loads(request.data)
+    id = data["id"]
+
+    cur.execute(sql_insert, (id,))
+    recipe = cur.fetchall()[0]
+    cur.close()
+    return {"success": True, "recipe": recipe}
+
+@app.route("/get_recipe_ingredients", methods=['POST'])
+def get_recipe_ingredients():
+    cur = conn.cursor()
+    sql_insert = """
+    SELECT * FROM ingredients 
+    WHERE recipe_id = %s
+    """
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+
+    cur.execute(sql_insert, (recipe_id,))
+    ingredients = cur.fetchall()
+    cur.close()
+    return {"success": True, "ingredients": ingredients}
+
+@app.route("/get_recipe_allergens", methods=['POST'])
+def get_recipe_allergens():
+    cur = conn.cursor()
+    sql_insert = """
+    SELECT * FROM allergens
+    WHERE recipe_id = %s
+    """
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+
+    cur.execute(sql_insert, (recipe_id,))
+    allergens = cur.fetchall()
+    cur.close()
+    return {"success": True, "allergens": allergens}
+
+@app.route("/get_recipe_steps", methods=['POST'])
+def get_recipe_steps():
+    cur = conn.cursor()
+    sql_insert = """
+    SELECT * FROM steps
+    WHERE recipe_id = %s
+    """
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+
+    cur.execute(sql_insert, (recipe_id,))
+    steps = cur.fetchall()
+    cur.close()
+    return {"success": True, "steps": steps}
+
 def check_user_exists(cur, username):
     query = sql.SQL("SELECT 1 FROM users WHERE username = {}").format(sql.Literal(username))
     cur.execute(query)
