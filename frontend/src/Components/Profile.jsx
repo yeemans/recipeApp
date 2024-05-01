@@ -34,7 +34,9 @@ function Profile() {
             username: username,
         });
 
+        console.log(result["data"])
         if (result["data"]["success"]) setBio(result["data"]["bio"]);
+        else return navigate("/notFound");
     }
 
     async function getUserRecipes() {
