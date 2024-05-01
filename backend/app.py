@@ -262,6 +262,24 @@ def create_allergen():
     cur.close()
     return {'success': True}
 
+@app.route("/get_user_recipes", methods=['POST'])
+def get_all_user_recipes():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    username = data["username"]
+    user_id = get_user(cur, username) # get user id from username
+    get_only_public = data["get_only_public"]
+
+    print(get_only_public)
+    query = "SELECT * FROM recipes WHERE chef_id = %s"
+    if get_only_public:
+        query = "SELECT * FROM recipes WHERE chef_id = %s AND is_public = true"
+    cur.execute(query, (user_id,))
+    recipes = cur.fetchall()
+
+    cur.close()
+    return {"success": True, "recipes": recipes}
+
 def check_user_exists(cur, username):
     query = sql.SQL("SELECT 1 FROM users WHERE username = {}").format(sql.Literal(username))
     cur.execute(query)

@@ -124,7 +124,8 @@ function NewRecipe() {
                 name: allergens[i],
             });
         }
-        console.log(result);
+        
+        return navigate(`/profile/${sessionStorage.getItem("recipeAppUsername")}`);
     }
 
     function getHtml(index) {

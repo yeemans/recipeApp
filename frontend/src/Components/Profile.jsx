@@ -6,11 +6,13 @@ function Profile() {
     const { username } = useParams(); // username of profile owner
     const [bio, setBio] = useState("");
     const [editingBio, setEditingBio] = useState("hidden");
+    const [recipes, setRecipes] = useState([]);
     let navigate = useNavigate();
 
     useEffect(() => {
         checkLoggedIn();
-        getBio(username);
+        getBio();
+        getUserRecipes();
     }, [])
 
     async function checkLoggedIn() {
@@ -27,14 +29,31 @@ function Profile() {
         if (!result["data"]["success"]) return navigate(`/login`);
     }
 
-    async function getBio(username) {
-        console.log(username);
+    async function getBio() {
         let result = await axios.post("http://localhost:5000/get_bio", {
             username: username,
         });
 
         if (result["data"]["success"]) setBio(result["data"]["bio"]);
-        console.log(result)
+    }
+
+    async function getUserRecipes() {
+        // getOnlyPublic is true when a user who doesnt own the profile views the page
+        // getOnlyPublic is false when the profile owner views the page
+        let getOnlyPublic = !(await(ownsProfile()));
+        
+        let result = await axios.post("http://localhost:5000/get_user_recipes", {
+            username: username,
+            get_only_public: getOnlyPublic
+        });
+
+        console.log(result);
+        if (result["data"]["success"])
+            setRecipes(result["data"]["recipes"])
+    }
+
+    async function ownsProfile() {
+        return sessionStorage.getItem("recipeAppUsername") === username;
     }
 
     function logout() {
@@ -43,7 +62,7 @@ function Profile() {
     }
 
     function editBioButton() {
-        let ownsPage = sessionStorage.getItem("recipeAppUsername") === username;
+        let ownsPage = ownsProfile();
         if (!ownsPage) return;
         return <button onClick={() => setEditingBio("visible")}>Edit Bio</button>
     }
@@ -75,6 +94,14 @@ function Profile() {
             </div>
 
             <h1>Recipes</h1>
+            <div>
+                {recipes.map((recipe) => (
+                    // recipe[0] is the recipeId, recipe[2] is the title
+                    <div>
+                        <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a>
+                    </div>
+                ))}
+            </div>
             <button onClick={() => logout()}>Log Out</button>
         </div>
     )
