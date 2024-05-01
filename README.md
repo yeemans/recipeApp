@@ -5,6 +5,6 @@ Running the app
 4. create a database called "recipeDB" with postgres. ChatGPT this one
 5. Use the username "postgres" with the password "$Peelord69"
 6. You can also change the username and password to match the ones on your machine. But you need to change username and password in every backend python file.
-7. Run createUser.py then createSession.py.
+7. Run createUser.py then createSession.py then createRecipe.py then createStep.py then createIngredient.py then createAllergen.py.
 8. type "flask run" in the terminal
 9. should be able to run the app at localhost:5173/register.
