@@ -1,8 +1,9 @@
 import {useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate} from "react-router-dom";
 import axios from "axios";
 
 function ShowRecipe() {
+    const navigate = useNavigate();
     const { id } = useParams();
     const [recipe, setRecipe] = useState([]);
     const [ingredients, setIngredients] = useState([]);
@@ -14,6 +15,7 @@ function ShowRecipe() {
         getIngredients();
         getAllergens();
         getSteps();
+        redirectIfPrivate();
     }, [])
 
     async function getRecipe() {
@@ -25,7 +27,11 @@ function ShowRecipe() {
         console.log(recipe)
         console.log(recipe["data"]["recipe"])
         console.log(recipe["data"]["recipe"][2])
-        if (recipe["data"]["success"]) setRecipe(recipe["data"]["recipe"])
+        if (recipe["data"]["success"]) {
+            setRecipe(recipe["data"]["recipe"])
+            return recipe["data"]["recipe"][4] // return whether or not this is private
+        }
+        
     }
 
     async function getIngredients() {
@@ -56,6 +62,19 @@ function ShowRecipe() {
 
         console.log(steps);
         if (steps["data"]["success"]) setSteps(steps["data"]["steps"])
+    }
+
+    async function redirectIfPrivate() {
+        let isPrivate = !(await getRecipe());
+        let ownsRecipe = await axios.post("http://localhost:5000/owns_recipe", {
+            username: sessionStorage.getItem("recipeAppUsername"),
+            recipe_id: id
+        })
+
+        console.log(isPrivate)
+        console.log(ownsRecipe["data"]["success"])
+        if (isPrivate && !ownsRecipe["data"]["success"])
+            return navigate("/recipeIsPrivate")
     }
 
     return(

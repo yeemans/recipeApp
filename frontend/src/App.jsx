@@ -6,6 +6,7 @@ import Profile from "./Components/Profile.jsx";
 import Login from "./Components/Login.jsx";
 import NewRecipe from "./Components/NewRecipe.jsx";
 import ShowRecipe from "./Components/ShowRecipe.jsx";
+import RecipeIsPrivate from './Components/RecipeIsPrivate.jsx';
 import './App.css';
 
 
@@ -15,6 +16,7 @@ function Root() {
       <div className="main-content">
         <Routes>
           <Route path="/notFound" element={<NotFound />} />
+          <Route path="/recipeIsPrivate" element={<RecipeIsPrivate />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile/:username" element={<Profile />} />

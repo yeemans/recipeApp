@@ -340,6 +340,22 @@ def get_recipe_steps():
     cur.close()
     return {"success": True, "steps": steps}
 
+@app.route("/owns_recipe", methods=['POST'])
+def owns_recipe():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    username = data["username"]
+    recipe_id = data["recipe_id"]
+
+    user_id = get_user(cur, username)
+    if not user_id: return {'success': False}
+    
+    recipe_owner = get_recipe_owner(cur, recipe_id)
+    success = user_id == recipe_owner
+
+    return {'success': success}
+
+
 def check_user_exists(cur, username):
     query = sql.SQL("SELECT 1 FROM users WHERE username = {}").format(sql.Literal(username))
     cur.execute(query)
@@ -371,8 +387,9 @@ def get_user(cur, username):
     WHERE username = %s
     """
     cur.execute(sql_insert, (username,))
-    user_id = cur.fetchone()[0]
-    return user_id
+    user_id = cur.fetchone()
+    if user_id: return user_id[0]
+    return None
 
 def get_user_bio(cur, username):
     sql_insert = """
@@ -399,6 +416,14 @@ def get_session(cur, username, session_token):
     """
     cur.execute(sql_insert, (get_user(cur, username), session_token,))
     return cur.fetchone() is not None # returns boolean for SELECT success
+
+def get_recipe_owner(cur, recipe_id):
+    sql_insert = """
+    SELECT chef_id FROM recipes 
+    WHERE id = %s
+    """
+    cur.execute(sql_insert, (recipe_id, ))
+    return cur.fetchone()[0]
 
 def update_bio(cur, user_id, new_bio):
     sql_insert = """
