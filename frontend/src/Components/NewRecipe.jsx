@@ -201,7 +201,7 @@ function NewRecipe() {
                                 <p>{step}</p>
                                 {/* Iterate through the images of this step and render them */}
                                 {stepImageLinks[stepIndex].map((imageLink, imageIndex) => (
-                                    <img class="stepImage" key={imageIndex} src={imageLink} alt={`Step ${stepIndex + 1} Image ${imageIndex + 1}`} />
+                                    <img className="stepImage" key={imageIndex} src={imageLink} alt={`Step ${stepIndex + 1} Image ${imageIndex + 1}`} />
                                 ))}
                             </div>
                         </li>

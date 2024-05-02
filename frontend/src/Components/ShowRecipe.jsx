@@ -1,5 +1,6 @@
 import {useEffect, useState } from "react";
 import { useParams, useNavigate} from "react-router-dom";
+import AddReview from "./AddReview.jsx";
 import axios from "axios";
 
 function ShowRecipe() {
@@ -99,12 +100,14 @@ function ShowRecipe() {
             </ul>
 
             <h2>Steps</h2>
-            <ol>
+            <ol className="stepList">
                 {steps.map((step) => (
                     // step[2] is the html
                     <li dangerouslySetInnerHTML={{ __html: step[2] }} />
                 ))}
             </ol>
+
+            <AddReview id={id} title={recipe[2]} />
         </div>
     )
 
