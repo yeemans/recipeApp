@@ -379,6 +379,8 @@ def create_review():
     # delete existing review for this recipe by user
     delete_review(cur, recipe_id, user_id)
     create_review(cur, recipe_id, user_id, review_body)
+    conn.commit()
+    cur.close()
     return {'success': True}
 
 
