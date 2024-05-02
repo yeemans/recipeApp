@@ -90,6 +90,16 @@ def get_allergens():
     allergens_json = jsonify(allergens)
     return allergens_json
 
+@app.route('/reviews', methods=['GET'])
+def get_reviews():
+    # Create a cursor
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM reviews")
+    reviews = cur.fetchall()
+    cur.close()
+    reviews_json = jsonify(reviews)
+    return reviews_json
+
 @app.route('/register', methods=['POST'])
 def register():
     session_token = None
@@ -283,14 +293,14 @@ def get_all_user_recipes():
 @app.route("/get_recipe_by_id", methods=['POST'])
 def get_recipe_by_id():
     cur = conn.cursor()
-    sql_insert = """
+    sql_select = """
     SELECT * FROM recipes 
     WHERE id = %s
     """
     data = json.loads(request.data)
     id = data["id"]
 
-    cur.execute(sql_insert, (id,))
+    cur.execute(sql_select, (id,))
     recipe = cur.fetchall()[0]
     cur.close()
     return {"success": True, "recipe": recipe}
@@ -298,14 +308,14 @@ def get_recipe_by_id():
 @app.route("/get_recipe_ingredients", methods=['POST'])
 def get_recipe_ingredients():
     cur = conn.cursor()
-    sql_insert = """
+    sql_select = """
     SELECT * FROM ingredients 
     WHERE recipe_id = %s
     """
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
 
-    cur.execute(sql_insert, (recipe_id,))
+    cur.execute(sql_select, (recipe_id,))
     ingredients = cur.fetchall()
     cur.close()
     return {"success": True, "ingredients": ingredients}
@@ -313,14 +323,14 @@ def get_recipe_ingredients():
 @app.route("/get_recipe_allergens", methods=['POST'])
 def get_recipe_allergens():
     cur = conn.cursor()
-    sql_insert = """
+    sql_select = """
     SELECT * FROM allergens
     WHERE recipe_id = %s
     """
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
 
-    cur.execute(sql_insert, (recipe_id,))
+    cur.execute(sql_select, (recipe_id,))
     allergens = cur.fetchall()
     cur.close()
     return {"success": True, "allergens": allergens}
@@ -328,17 +338,34 @@ def get_recipe_allergens():
 @app.route("/get_recipe_steps", methods=['POST'])
 def get_recipe_steps():
     cur = conn.cursor()
-    sql_insert = """
+    sql_select = """
     SELECT * FROM steps
     WHERE recipe_id = %s
     """
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
 
-    cur.execute(sql_insert, (recipe_id,))
+    cur.execute(sql_select, (recipe_id,))
     steps = cur.fetchall()
     cur.close()
     return {"success": True, "steps": steps}
+
+@app.route("/get_recipe_reviews", methods=['POST'])
+def get_recipe_reviews():
+    cur = conn.cursor()
+    sql_select = """
+    SELECT username, body
+    FROM reviews
+    JOIN users ON users.id = reviews.user_id
+    WHERE recipe_id = %s
+    """
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+
+    cur.execute(sql_select, (recipe_id,))
+    reviews = cur.fetchall()
+    cur.close()
+    return {"success": True, "reviews": reviews}
 
 @app.route("/owns_recipe", methods=['POST'])
 def owns_recipe():
@@ -349,11 +376,29 @@ def owns_recipe():
 
     user_id = get_user(cur, username)
     if not user_id: return {'success': False}
-    
+
     recipe_owner = get_recipe_owner(cur, recipe_id)
     success = user_id == recipe_owner
 
     return {'success': success}
+
+@app.route("/create_review", methods=['POST'])
+def create_review():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+    review_body = data["review_body"]
+    username = data["username"]
+
+    user_id = get_user(cur, username)
+    if not user_id: return {'success': False}
+
+    # delete existing review for this recipe by user
+    delete_review(cur, recipe_id, user_id)
+    create_review(cur, recipe_id, user_id, review_body)
+    conn.commit()
+    cur.close()
+    return {'success': True}
 
 
 def check_user_exists(cur, username):
@@ -380,6 +425,22 @@ def insert_new_user(cur, username, password):
     cur.execute(sql_insert, (username, password, BLANK_BIO,))
     inserted_user_id = cur.fetchone()[0]
     return inserted_user_id
+
+def delete_review(cur, recipe_id, user_id):
+    sql_delete = """
+    DELETE FROM reviews
+    WHERE recipe_id = %s AND user_id = %s
+    """   
+    cur.execute(sql_delete, (recipe_id, user_id,))
+     
+def create_review(cur, recipe_id, user_id, review_body):
+    sql_insert = """
+    INSERT INTO reviews (recipe_id, user_id, body)
+    VALUES (%s, %s, %s)
+    RETURNING id
+    """
+    cur.execute(sql_insert, (recipe_id, user_id, review_body,))
+    return cur.fetchone()[0]
 
 def get_user(cur, username):
     sql_insert = """

@@ -1,5 +1,6 @@
 import {useEffect, useState } from "react";
 import { useParams, useNavigate} from "react-router-dom";
+import AddReview from "./AddReview.jsx";
 import axios from "axios";
 
 function ShowRecipe() {
@@ -9,12 +10,14 @@ function ShowRecipe() {
     const [ingredients, setIngredients] = useState([]);
     const [allergens, setAllergens] = useState([]);
     const [steps, setSteps] = useState([]);
+    const [reviews, setReviews] = useState([]);
 
     useEffect(() => {
         getRecipe();
         getIngredients();
         getAllergens();
         getSteps();
+        getReviews();
         redirectIfPrivate();
     }, [])
 
@@ -23,15 +26,10 @@ function ShowRecipe() {
         let recipe = await axios.post("http://localhost:5000/get_recipe_by_id", {
             id: id,
         });
-
-        console.log(recipe)
-        console.log(recipe["data"]["recipe"])
-        console.log(recipe["data"]["recipe"][2])
         if (recipe["data"]["success"]) {
             setRecipe(recipe["data"]["recipe"])
             return recipe["data"]["recipe"][4] // return whether or not this is private
         }
-        
     }
 
     async function getIngredients() {
@@ -39,8 +37,6 @@ function ShowRecipe() {
         let ingredients = await axios.post("http://localhost:5000/get_recipe_ingredients", {
             recipe_id: id,
         });
-
-        console.log(ingredients);
         if (ingredients["data"]["success"]) setIngredients(ingredients["data"]["ingredients"])
     }
 
@@ -49,8 +45,6 @@ function ShowRecipe() {
         let allergens = await axios.post("http://localhost:5000/get_recipe_allergens", {
             recipe_id: id,
         });
-
-        console.log(allergens);
         if (allergens["data"]["success"]) setAllergens(allergens["data"]["allergens"])
     }
 
@@ -59,9 +53,15 @@ function ShowRecipe() {
         let steps = await axios.post("http://localhost:5000/get_recipe_steps", {
             recipe_id: id,
         });
-
-        console.log(steps);
         if (steps["data"]["success"]) setSteps(steps["data"]["steps"])
+    }
+
+    async function getReviews() {
+        // reviews are an array: [id, recipe_id, user_id, body]
+        let reviews = await axios.post("http://localhost:5000/get_recipe_reviews", {
+            recipe_id: id,
+        });
+        if (reviews["data"]["success"]) setReviews(reviews["data"]["reviews"]);
     }
 
     async function redirectIfPrivate() {
@@ -99,12 +99,25 @@ function ShowRecipe() {
             </ul>
 
             <h2>Steps</h2>
-            <ol>
+            <ol className="stepList">
                 {steps.map((step) => (
                     // step[2] is the html
                     <li dangerouslySetInnerHTML={{ __html: step[2] }} />
                 ))}
             </ol>
+
+            <h2>Reviews</h2>
+            <div>
+                {reviews.map((review) => (
+                    // reviews are an array [username, body]
+                    <div>
+                        <p>{review[0]} says</p>
+                        <p>{review[1]}</p>
+                    </div>
+                ))}
+            </div>
+
+            <AddReview id={id} title={recipe[2]} />
         </div>
     )
 
