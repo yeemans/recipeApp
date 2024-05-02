@@ -293,14 +293,14 @@ def get_all_user_recipes():
 @app.route("/get_recipe_by_id", methods=['POST'])
 def get_recipe_by_id():
     cur = conn.cursor()
-    sql_insert = """
+    sql_select = """
     SELECT * FROM recipes 
     WHERE id = %s
     """
     data = json.loads(request.data)
     id = data["id"]
 
-    cur.execute(sql_insert, (id,))
+    cur.execute(sql_select, (id,))
     recipe = cur.fetchall()[0]
     cur.close()
     return {"success": True, "recipe": recipe}
@@ -308,14 +308,14 @@ def get_recipe_by_id():
 @app.route("/get_recipe_ingredients", methods=['POST'])
 def get_recipe_ingredients():
     cur = conn.cursor()
-    sql_insert = """
+    sql_select = """
     SELECT * FROM ingredients 
     WHERE recipe_id = %s
     """
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
 
-    cur.execute(sql_insert, (recipe_id,))
+    cur.execute(sql_select, (recipe_id,))
     ingredients = cur.fetchall()
     cur.close()
     return {"success": True, "ingredients": ingredients}
@@ -323,14 +323,14 @@ def get_recipe_ingredients():
 @app.route("/get_recipe_allergens", methods=['POST'])
 def get_recipe_allergens():
     cur = conn.cursor()
-    sql_insert = """
+    sql_select = """
     SELECT * FROM allergens
     WHERE recipe_id = %s
     """
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
 
-    cur.execute(sql_insert, (recipe_id,))
+    cur.execute(sql_select, (recipe_id,))
     allergens = cur.fetchall()
     cur.close()
     return {"success": True, "allergens": allergens}
@@ -338,17 +338,34 @@ def get_recipe_allergens():
 @app.route("/get_recipe_steps", methods=['POST'])
 def get_recipe_steps():
     cur = conn.cursor()
-    sql_insert = """
+    sql_select = """
     SELECT * FROM steps
     WHERE recipe_id = %s
     """
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
 
-    cur.execute(sql_insert, (recipe_id,))
+    cur.execute(sql_select, (recipe_id,))
     steps = cur.fetchall()
     cur.close()
     return {"success": True, "steps": steps}
+
+@app.route("/get_recipe_reviews", methods=['POST'])
+def get_recipe_reviews():
+    cur = conn.cursor()
+    sql_select = """
+    SELECT username, body
+    FROM reviews
+    JOIN users ON users.id = reviews.user_id
+    WHERE recipe_id = %s
+    """
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+
+    cur.execute(sql_select, (recipe_id,))
+    reviews = cur.fetchall()
+    cur.close()
+    return {"success": True, "reviews": reviews}
 
 @app.route("/owns_recipe", methods=['POST'])
 def owns_recipe():
