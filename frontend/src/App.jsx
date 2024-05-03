@@ -30,6 +30,15 @@ function Root() {
   );
 }
 
+function goBackButton() {
+  return navigate(`/profile/${sessionStorage.getItem("recipeAppUsername")}`);
+}
+
+<div>
+<button onClick={() => goBackButton()}>Back to Profile</button>
+</div>
+
+
 function App() {
   return (
     <BrowserRouter>

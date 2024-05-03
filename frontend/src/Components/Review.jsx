@@ -43,12 +43,18 @@ function Review(props) {
         if (result["data"]["success"]) setLoggedIn(true);
     }
 
+    function goBack() {
+        navigate(`/profile/${sessionStorage.getItem("recipeAppUsername")}`)
+    }
+
+
     function getMarkHelpfulButtons() {
         if (!loggedIn) return false;
         return (
             <div>
                 <button onClick={() => markHelpful(true)}>Mark Helpful</button>
                 <button onClick={() => markHelpful(false)}>Mark Unhelpful</button>
+                <button onClick={() => goBack()}>Back to Profile</button>
             </div>
         )
     }
