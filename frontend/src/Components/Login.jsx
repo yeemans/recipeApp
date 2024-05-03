@@ -1,12 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Login() {
+    useEffect(() => {
+        checkLoggedIn();
+    }, [])
+
     let [username, setUsername] = useState("");
     let [password, setPassword] = useState("");
     let [errorMessage, setErrorMessage] = useState("");
     let navigate = useNavigate();
+
+    async function checkLoggedIn() {
+        let result = await axios.post("http://localhost:5000/logged_in", {
+            username: sessionStorage.getItem("recipeAppUsername"),
+            session_token: sessionStorage.getItem("recipeAppSession"),
+        });
+
+        let profileLink = `/profile/${sessionStorage.getItem("recipeAppUsername")}`;
+        if (result["data"]["success"]) return navigate(profileLink);
+    }
     
     async function loginUser() {
         let result = await axios.post("http://localhost:5000/login", {

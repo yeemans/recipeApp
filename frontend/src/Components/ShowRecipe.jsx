@@ -2,6 +2,7 @@ import {useEffect, useState } from "react";
 import { useParams, useNavigate} from "react-router-dom";
 import AddReview from "./AddReview.jsx";
 import axios from "axios";
+import Review from "./Review.jsx";
 
 function ShowRecipe() {
     const navigate = useNavigate();
@@ -109,11 +110,8 @@ function ShowRecipe() {
             <h2>Reviews</h2>
             <div>
                 {reviews.map((review) => (
-                    // reviews are an array [username, body]
-                    <div>
-                        <p>{review[0]} says</p>
-                        <p>{review[1]}</p>
-                    </div>
+                    // reviews are an array [review id, user_id, username, body]
+                    <Review review={review} />
                 ))}
             </div>
 
