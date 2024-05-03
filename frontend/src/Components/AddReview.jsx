@@ -26,18 +26,6 @@ function AddReview(props) {
         if (result["data"]["success"]) setShowAddReview("visible");
     }
 
-    async function getHelpfulCounts() {
-        let result = await axios.post("http://localhost:5000/get_review_helpfuls", {
-            review_id: props.review[0],
-            username: sessionStorage.getItem("recipeAppUsername"),
-        })
-
-        if (!result["data"]["success"]) return
-        setHelpfulCount(result["data"]["helpful"])
-        setUnhelpfulCount(result["data"]["unhelpful"])
-    }
-
-
     async function submitReview() {
         let result = await axios.post("http://localhost:5000/create_review", {
             recipe_id: id,

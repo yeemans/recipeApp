@@ -14,11 +14,11 @@ import secrets
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/' 
 CORS(app)  # Enable CORS for all origins
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:$Peelord69@localhost/testDB'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:$Peelord69@localhost/recipeDB'
 db = SQLAlchemy(app)
 
 conn = psycopg2.connect(
-    dbname='testDB',
+    dbname='recipeDB',
     user='postgres',
     password='$Peelord69',
     host='localhost'
@@ -109,6 +109,16 @@ def get_review_helpfuls():
     cur.close()
     review_helpfuls_json = jsonify(review_helpfuls)
     return review_helpfuls_json
+
+@app.route('/ratings', methods=['GET'])
+def get_ratings():
+    # Create a cursor
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM ratings")
+    ratings = cur.fetchall()
+    cur.close()
+    ratings_json = jsonify(ratings)
+    return ratings_json
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -448,6 +458,46 @@ def get_review_helpful_counts():
     cur.close()
     return {"success": True, "helpful": helpfuls, "unhelpful": unhelpfuls}
 
+@app.route("/submit_rating", methods=['POST'])
+def submit_rating():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+    username = data["username"]
+    rating = data["rating"]
+
+    print(data)
+    user_id = get_user(cur, username)
+    if not user_id: return {'success': False}
+
+    # delete existing review for this recipe by user
+    delete_rating(cur, recipe_id, user_id)
+    create_rating(cur, recipe_id, user_id, rating)
+
+    conn.commit()
+    cur.close()
+    return {'success': True}
+
+@app.route("/average_rating", methods=['POST'])
+def get_average_rating():
+    sql_select = """
+    SELECT AVG(rt.rating) AS average_rating
+    FROM recipes r
+    JOIN ratings rt ON r.id = rt.recipe_id
+    WHERE r.id = %s
+    GROUP BY r.id;
+    """
+
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+    cur.execute(sql_select, (recipe_id,))
+    average_rating = cur.fetchone()
+
+    print(average_rating)
+    return {"success": True, "averageRating": average_rating}
+
+
 def check_user_exists(cur, username):
     query = sql.SQL("SELECT 1 FROM users WHERE username = {}").format(sql.Literal(username))
     cur.execute(query)
@@ -503,6 +553,22 @@ def create_review_helpful(cur, review_id, user_id, helpful):
     RETURNING id
     """
     cur.execute(sql_insert, (review_id, user_id, helpful,))
+    return cur.fetchone()[0]
+
+def delete_rating(cur, recipe_id, user_id):
+    sql_delete = """
+    DELETE FROM ratings
+    WHERE recipe_id = %s AND user_id = %s
+    """   
+    cur.execute(sql_delete, (recipe_id, user_id,))
+
+def create_rating(cur, recipe_id, user_id, rating):
+    sql_insert = """
+    INSERT INTO ratings (recipe_id, user_id, rating)
+    VALUES (%s, %s, %s)
+    RETURNING id
+    """
+    cur.execute(sql_insert, (recipe_id, user_id, rating,))
     return cur.fetchone()[0]
 
 def get_user(cur, username):

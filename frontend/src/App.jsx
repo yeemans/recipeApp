@@ -7,6 +7,8 @@ import Login from "./Components/Login.jsx";
 import NewRecipe from "./Components/NewRecipe.jsx";
 import ShowRecipe from "./Components/ShowRecipe.jsx";
 import RecipeIsPrivate from './Components/RecipeIsPrivate.jsx';
+import Navbar from './Components/Navbar.jsx';
+import Logout from './Components/Logout.jsx';
 import './App.css';
 
 
@@ -14,9 +16,11 @@ function Root() {
   return (
     <div className="App">
       <div className="main-content">
+        <Navbar />
         <Routes>
           <Route path="/notFound" element={<NotFound />} />
           <Route path="/recipeIsPrivate" element={<RecipeIsPrivate />} />
+          <Route path="/logout" element={<Logout />} />
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
 

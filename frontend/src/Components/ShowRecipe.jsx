@@ -3,6 +3,7 @@ import { useParams, useNavigate} from "react-router-dom";
 import AddReview from "./AddReview.jsx";
 import axios from "axios";
 import Review from "./Review.jsx";
+import RatingSlider from "./RatingSlider.jsx";
 
 function ShowRecipe() {
     const navigate = useNavigate();
@@ -12,6 +13,8 @@ function ShowRecipe() {
     const [allergens, setAllergens] = useState([]);
     const [steps, setSteps] = useState([]);
     const [reviews, setReviews] = useState([]);
+    const [rating, setRating] = useState(3); // Initial rating value
+    const [averageRating, setAverageRating] = useState("No ratings yet.")
 
     useEffect(() => {
         getRecipe();
@@ -20,6 +23,7 @@ function ShowRecipe() {
         getSteps();
         getReviews();
         redirectIfPrivate();
+        getAverageRating();
     }, [])
 
     async function getRecipe() {
@@ -78,10 +82,26 @@ function ShowRecipe() {
             return navigate("/recipeIsPrivate")
     }
 
+    async function getAverageRating() {
+        let result = await axios.post("http://localhost:5000/average_rating", {
+            recipe_id: id
+        })
+        console.log(result);
+        if (result["data"]["success"] && result["data"]["averageRating"] !== null)
+            setAverageRating(Math.round(result["data"]["averageRating"] * 100) / 100) 
+    }
+
     return(
         <div>
-            <h1>{recipe[2]}</h1>
-            <h3>{`Cuisine: ${recipe[3]}`}</h3>
+            <div> 
+                <h1>{recipe[2]}</h1>
+                <h3>{`Cuisine: ${recipe[3]}`}</h3>
+                <h3>Rating: {averageRating} </h3>
+            </div>
+            <RatingSlider username={sessionStorage.getItem("recipeAppUsername")}
+            recipeId={id} 
+            rating={rating} 
+            setRating={setRating} />
 
             <h2>Ingredients</h2>
             <ul>

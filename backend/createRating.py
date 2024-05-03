@@ -10,17 +10,17 @@ conn = psycopg2.connect(
 
 # Open a cursor to perform database operations
 cur = conn.cursor()
-create_review_helpfuls_table = """
-CREATE TABLE IF NOT EXISTS reviewHelpfuls (
+create_ratings_table = """
+CREATE TABLE IF NOT EXISTS ratings (
     id SERIAL PRIMARY KEY,
-    review_id INT REFERENCES recipes(id) ON DELETE CASCADE,
+    recipe_id INT REFERENCES recipes(id) ON DELETE CASCADE,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    helpful BOOLEAN DEFAULT TRUE
+    rating INTEGER CHECK (rating >= 1 AND rating <= 5) DEFAULT 1
 )
 """
 # Execute a command: this creates a new table
-cur.execute('DROP TABLE IF EXISTS reviewHelpfuls;')
-cur.execute(create_review_helpfuls_table)
+cur.execute('DROP TABLE IF EXISTS ratings;')
+cur.execute(create_ratings_table)
 
 
 conn.commit()

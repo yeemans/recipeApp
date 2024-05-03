@@ -10,24 +10,9 @@ function Profile() {
     let navigate = useNavigate();
 
     useEffect(() => {
-        checkLoggedIn();
         getBio();
         getUserRecipes();
     }, [])
-
-    async function checkLoggedIn() {
-        let sessionToken = sessionStorage.getItem("recipeAppSession");
-        let user = sessionStorage.getItem("recipeAppUsername")
-        if (sessionToken === null) return navigate(`/login`);
-
-        let result = await axios.post("http://localhost:5000/logged_in", {
-            username: user,
-            session_token: sessionToken,
-        });
-
-        // bounce user back to login if not logged in
-        if (!result["data"]["success"]) return navigate(`/login`);
-    }
 
     async function getBio() {
         let result = await axios.post("http://localhost:5000/get_bio", {
@@ -54,7 +39,7 @@ function Profile() {
             setRecipes(result["data"]["recipes"])
     }
 
-    async function ownsProfile() {
+    function ownsProfile() {
         return sessionStorage.getItem("recipeAppUsername") === username;
     }
 
@@ -66,6 +51,7 @@ function Profile() {
 
     function editBioButton() {
         let ownsPage = ownsProfile();
+        console.log("owns page:" + ownsPage)
         if (!ownsPage) return;
         return <button onClick={() => setEditingBio("visible")}>Edit Bio</button>
     }
