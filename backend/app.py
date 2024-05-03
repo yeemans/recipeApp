@@ -100,6 +100,16 @@ def get_reviews():
     reviews_json = jsonify(reviews)
     return reviews_json
 
+@app.route('/review_helpfuls', methods=['GET'])
+def get_review_helpfuls():
+    # Create a cursor
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM reviewHelpfuls")
+    review_helpfuls = cur.fetchall()
+    cur.close()
+    review_helpfuls_json = jsonify(review_helpfuls)
+    return review_helpfuls_json
+
 @app.route('/register', methods=['POST'])
 def register():
     session_token = None
@@ -354,7 +364,7 @@ def get_recipe_steps():
 def get_recipe_reviews():
     cur = conn.cursor()
     sql_select = """
-    SELECT username, body
+    SELECT reviews.id, reviews.user_id, username, body
     FROM reviews
     JOIN users ON users.id = reviews.user_id
     WHERE recipe_id = %s
@@ -364,6 +374,7 @@ def get_recipe_reviews():
 
     cur.execute(sql_select, (recipe_id,))
     reviews = cur.fetchall()
+    print(reviews)
     cur.close()
     return {"success": True, "reviews": reviews}
 
@@ -400,6 +411,42 @@ def create_review():
     cur.close()
     return {'success': True}
 
+@app.route("/mark_helpful", methods=['POST'])
+def mark_helpful():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    review_id = data["review_id"]
+    username = data["username"]
+    helpful = data["helpful"]
+
+    if not username: return {'success': False}
+    user_id = get_user(cur, username)
+    if not user_id: return {'success': False}
+    # delete existing review for this recipe by user
+    delete_review_helpful(cur, review_id, user_id)
+    create_review_helpful(cur, review_id, user_id, helpful)
+    conn.commit()
+    cur.close()
+    return {'success': True}
+
+@app.route("/get_review_helpful_counts", methods=['POST'])
+def get_review_helpful_counts():
+    cur = conn.cursor()
+    helpful_select = """
+    SELECT id FROM reviewHelpfuls WHERE review_id = %s AND helpful = TRUE
+    """
+
+    unhelpful_select = "SELECT id FROM reviewHelpfuls WHERE review_id = %s AND helpful = FALSE"
+    data = json.loads(request.data)
+    review_id = data["review_id"]
+
+    cur.execute(helpful_select, (review_id,))
+    helpfuls = len(cur.fetchall())
+
+    cur.execute(unhelpful_select, (review_id,))
+    unhelpfuls = len(cur.fetchall())
+    cur.close()
+    return {"success": True, "helpful": helpfuls, "unhelpful": unhelpfuls}
 
 def check_user_exists(cur, username):
     query = sql.SQL("SELECT 1 FROM users WHERE username = {}").format(sql.Literal(username))
@@ -440,6 +487,22 @@ def create_review(cur, recipe_id, user_id, review_body):
     RETURNING id
     """
     cur.execute(sql_insert, (recipe_id, user_id, review_body,))
+    return cur.fetchone()[0]
+
+def delete_review_helpful(cur, review_id, user_id):
+    sql_delete = """
+    DELETE FROM reviewHelpfuls
+    WHERE review_id = %s AND user_id = %s
+    """   
+    cur.execute(sql_delete, (review_id, user_id,))
+     
+def create_review_helpful(cur, review_id, user_id, helpful):
+    sql_insert = """
+    INSERT INTO reviewHelpfuls (review_id, user_id, helpful)
+    VALUES (%s, %s, %s)
+    RETURNING id
+    """
+    cur.execute(sql_insert, (review_id, user_id, helpful,))
     return cur.fetchone()[0]
 
 def get_user(cur, username):

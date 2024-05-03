@@ -17,8 +17,10 @@ function Root() {
         <Routes>
           <Route path="/notFound" element={<NotFound />} />
           <Route path="/recipeIsPrivate" element={<RecipeIsPrivate />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
+
+          <Route path="/register" element={<Register />} />
           <Route path="/profile/:username" element={<Profile />} />
           <Route path="/newRecipe" element={<NewRecipe />} />
           <Route path="/recipes/:id" element={<ShowRecipe />} />

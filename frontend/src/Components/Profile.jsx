@@ -59,7 +59,8 @@ function Profile() {
     }
 
     function logout() {
-        sessionStorage.removeItem("recipeAppSession")
+        sessionStorage.removeItem("recipeAppSession");
+        sessionStorage.removeItem("recipeAppUsername")
         return navigate('/login');
     }
 
