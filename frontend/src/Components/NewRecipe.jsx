@@ -128,6 +128,10 @@ function NewRecipe() {
         return navigate(`/profile/${sessionStorage.getItem("recipeAppUsername")}`);
     }
 
+    function goBackButton() {
+        return navigate(`/profile/${sessionStorage.getItem("recipeAppUsername")}`);
+    }
+
     function getHtml(index) {
         let paragraph = `<p>${steps[index]}</p>`
         for (let img of stepImageLinks[index]) 
@@ -174,6 +178,7 @@ function NewRecipe() {
             <button onClick={() => toggleIngredientEditor()}>Toggle Ingredient Editor</button>
             <button onClick={() => toggleAllergenEditor()}>Toggle Allergen Editor</button>
             <button onClick={() => toggleStepEditor()}>Toggle Step Editor</button>
+            <button onClick={() => goBackButton()}>Back to Profile</button>
             
             <div> 
                 <h1>Recipe Preview</h1>

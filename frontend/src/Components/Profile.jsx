@@ -3,16 +3,19 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 function Profile() {
-    const { username } = useParams(); // username of profile owner
+    const { username } = useParams();
     const [bio, setBio] = useState("");
     const [editingBio, setEditingBio] = useState("hidden");
     const [recipes, setRecipes] = useState([]);
+    const [savedRecipes, setSavedRecipes] = useState([]);
+    const [activeTab, setActiveTab] = useState("yourRecipes");
     let navigate = useNavigate();
 
     useEffect(() => {
         checkLoggedIn();
         getBio();
         getUserRecipes();
+        getSavedRecipes();
     }, [])
 
     async function checkLoggedIn() {
@@ -25,7 +28,6 @@ function Profile() {
             session_token: sessionToken,
         });
 
-        // bounce user back to login if not logged in
         if (!result["data"]["success"]) return navigate(`/login`);
     }
 
@@ -34,25 +36,35 @@ function Profile() {
             username: username,
         });
 
-        console.log(result["data"])
         if (result["data"]["success"]) setBio(result["data"]["bio"]);
-        else return navigate("/notFound");
     }
 
     async function getUserRecipes() {
-        // getOnlyPublic is true when a user who doesnt own the profile views the page
-        // getOnlyPublic is false when the profile owner views the page
-        let getOnlyPublic = !(await(ownsProfile()));
+        let getOnlyPublic = !(await ownsProfile());
         
         let result = await axios.post("http://localhost:5000/get_user_recipes", {
             username: username,
             get_only_public: getOnlyPublic
         });
 
-        console.log(result);
         if (result["data"]["success"])
-            setRecipes(result["data"]["recipes"])
+            setRecipes(result["data"]["recipes"]);
     }
+
+    async function getSavedRecipes() {
+        let result = await axios.post("http://localhost:5000/get_saved_recipes", {
+            username: username,
+        });
+
+        if (result["data"]["success"]) {
+            setSavedRecipes(result["data"]["recipes"]);
+        }
+    }
+
+    async function createRecipeButton () {
+        return navigate(`/newRecipe`);
+    }
+
 
     async function ownsProfile() {
         return sessionStorage.getItem("recipeAppUsername") === username;
@@ -60,13 +72,11 @@ function Profile() {
 
     function logout() {
         sessionStorage.removeItem("recipeAppSession");
-        sessionStorage.removeItem("recipeAppUsername")
-        return navigate('/login');
+        navigate('/login');
     }
 
     function editBioButton() {
-        let ownsPage = ownsProfile();
-        if (!ownsPage) return;
+        if (!ownsProfile()) return;
         return <button onClick={() => setEditingBio("visible")}>Edit Bio</button>
     }
 
@@ -83,7 +93,7 @@ function Profile() {
         });
     }
 
-    return(
+    return (
         <div>
             <h1>{username}</h1>
             <div>
@@ -92,22 +102,44 @@ function Profile() {
                 {editBioButton()}
                 <div className={editingBio}>
                     <textarea value={bio} onChange={(e) => setBio(e.target.value)}></textarea>
-                    <button onClick={() => submitBio()}>Save Edit</button>
+                    <button onClick={submitBio}>Save Edit</button>
                 </div>
             </div>
 
-            <h1>Recipes</h1>
-            <div>
-                {recipes.map((recipe) => (
-                    // recipe[0] is the recipeId, recipe[2] is the title
-                    <div>
-                        <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a>
-                    </div>
-                ))}
+            <div className="tabs">
+                <button onClick={() => setActiveTab("yourRecipes")}>Your Recipes</button>
+                <button onClick={() => setActiveTab("savedRecipes")}>Saved Recipes</button>
+                <button onClick={() => createRecipeButton()}>Create New Recipe</button>
             </div>
-            <button onClick={() => logout()}>Log Out</button>
+            
+            {activeTab === "yourRecipes" && (
+                <div>
+                    <h1>Your Recipes</h1>
+                    {recipes.map(recipe => (
+                        <div key={recipe[0]}>
+                            <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {activeTab === "savedRecipes" && (
+                <div>
+                    <h1>Saved Recipes</h1>
+                    {savedRecipes.map(recipe => (
+                        <div key={recipe[0]}>
+                            <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a>
+                        </div>
+                    ))}
+                </div>
+                
+            )}
+
+            <button onClick={logout}>Log Out</button>
+
+        
         </div>
-    )
+    );
 }
 
 export default Profile;

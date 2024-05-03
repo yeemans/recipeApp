@@ -18,7 +18,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:$Peelord69@localh
 db = SQLAlchemy(app)
 
 conn = psycopg2.connect(
-    dbname='testDB',
+    dbname='recipeDB',
     user='postgres',
     password='$Peelord69',
     host='localhost'
