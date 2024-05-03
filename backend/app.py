@@ -14,11 +14,11 @@ import secrets
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/' 
 CORS(app)  # Enable CORS for all origins
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:$Peelord69@localhost/recipeDB'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:$Peelord69@localhost/testDB'
 db = SQLAlchemy(app)
 
 conn = psycopg2.connect(
-    dbname='recipeDB',
+    dbname='testDB',
     user='postgres',
     password='$Peelord69',
     host='localhost'
