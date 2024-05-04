@@ -34,8 +34,8 @@ function NewRecipe() {
     }, [])
 
     async function checkLoggedIn() {
-        let sessionToken = sessionStorage.getItem("recipeAppSession");
-        let user = sessionStorage.getItem("recipeAppUsername")
+        let sessionToken = localStorage.getItem("recipeAppSession");
+        let user = localStorage.getItem("recipeAppUsername")
         if (sessionToken === null) return navigate(`/login`);
 
         let result = await axios.post("http://localhost:5000/logged_in", {
@@ -154,7 +154,7 @@ function NewRecipe() {
 
     async function submitRecipe() {
         let result = await axios.post("http://localhost:5000/create_recipe", {
-            username: sessionStorage.getItem("recipeAppUsername"),
+            username: localStorage.getItem("recipeAppUsername"),
             title: title,
             cuisine: cuisine,
             is_public: isPublic
@@ -186,7 +186,7 @@ function NewRecipe() {
             });
         }
         
-        return navigate(`/profile/${sessionStorage.getItem("recipeAppUsername")}`);
+        return navigate(`/profile/${localStorage.getItem("recipeAppUsername")}`);
     }
 
     function getHtml(index) {
@@ -218,7 +218,8 @@ function NewRecipe() {
         setModifyingStepIndex(index);
         setCurrStepImageLinks(stepImageLinks[index]);
     }
-
+     
+    // testing comment
     function deleteImageLink(index) {
         const updatedLinks = currStepImageLinks.filter((item, idx) => idx !== index);
         setCurrStepImageLinks(updatedLinks);

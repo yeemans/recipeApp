@@ -9,8 +9,8 @@ const RatingSlider = (props) => {
 
     async function checkLoggedIn() {
         let result = await axios.post("http://localhost:5000/logged_in", {
-            username: sessionStorage.getItem("recipeAppUsername"),
-            session_token: sessionStorage.getItem("recipeAppSession"),
+            username: localStorage.getItem("recipeAppUsername"),
+            session_token: localStorage.getItem("recipeAppSession"),
         });
         if (result["data"]["success"]) setLoggedIn(true);
     }

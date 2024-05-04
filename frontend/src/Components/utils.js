@@ -1,6 +1,6 @@
 export async function checkLoggedIn() {
-    let sessionToken = sessionStorage.getItem("recipeAppSession");
-    let user = sessionStorage.getItem("recipeAppUsername")
+    let sessionToken = localStorage.getItem("recipeAppSession");
+    let user = localStorage.getItem("recipeAppUsername")
     if (sessionToken === null) return false;
 
     let result = await axios.post("http://localhost:5000/logged_in", {
