@@ -2,8 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom'; // If using React Router for navigation
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 
-const Navbar = () => {
-    const username = localStorage.getItem("recipeAppUsername");
+const Navbar = (props) => {
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -12,7 +11,7 @@ const Navbar = () => {
             <div className="collapse navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav">
                     <li className="nav-item">
-                        <Link className="nav-link" to={`/profile/${username}`}>My Profile</Link>
+                        <Link className="nav-link" to={`/`}>My Profile</Link>
                     </li>
                     <li className="nav-item">
                         <Link className="nav-link" to="/newRecipe">New Recipe</Link>
