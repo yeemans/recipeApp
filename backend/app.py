@@ -60,6 +60,16 @@ def get_recipes():
     recipes_json = jsonify(recipes)
     return recipes_json
 
+@app.route('/savedRecipes', methods=['GET'])
+def get_savedRecipes():
+    # Create a cursor
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM savedRecipes")
+    recipes = cur.fetchall()
+    cur.close()
+    recipes_json = jsonify(recipes)
+    return recipes_json
+
 @app.route('/ingredients', methods=['GET'])
 def get_ingredients():
     # Create a cursor
