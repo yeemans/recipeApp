@@ -1,0 +1,99 @@
+.page-container {
+    height: 90vh;
+    width: 100%;
+    background-image: url("https://www.eatingwell.com/thmb/m5xUzIOmhWSoXZnY-oZcO9SdArQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/article_291139_the-top-10-healthiest-foods-for-kids_-02-4b745e57928c4786a61b47d8ba920058.jpg");
+    background-position: center;
+    display: flex;
+    justify-content: center;
+}
+
+.login-container {
+    width: 25%;
+    background-color: white;
+    border-radius: 10px;
+    padding: 4%;
+    margin: 4%;
+    border: 1px solid #d1d3d3;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+    overflow: auto;
+  }
+
+.welcome-container {
+    display: flex;
+    justify-content: center;
+}
+
+.logo {
+    max-height: 100px;
+    width: auto;
+    margin-bottom: 40px;
+}
+
+.logo:hover {
+    cursor: pointer;
+    filter: opacity(.7);
+    transition: all ease-in-out .5s;
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+}
+
+.form-container input {
+    width: 90%;
+}
+
+input[type=text] {
+    margin-top: 10px;
+    border:1px solid #9a9898;
+    padding: 7px;
+    border-radius:10px;
+}
+
+input[type=password] {
+    margin-top: 10px;
+    border:1px solid #9a9898;
+    padding: 7px;
+    border-radius:10px;
+}
+
+
+.button-container {
+    display: flex;
+    justify-content: center;
+}
+
+.button-container button {
+    width: 90%;
+}
+
+.login-button {
+    margin-top: 40px;
+    border: none;
+    padding: 5px;
+    border-radius:10px;
+    color: white;
+    background-color: #6dcffd;
+    transition: all ease-in-out .5s;
+}
+
+.login-button:hover {
+    background-color: #30b8f8;
+    cursor: pointer;
+}
+
+.register-button {
+    margin-top: 7px;
+    border: none;
+    padding: 5px;
+    border-radius:10px;
+    color: white;
+    background-color: #636567;
+    transition: all ease-in-out .5s;
+}
+
+.register-button:hover {
+    background-color: #37393a;
+    cursor: pointer;
+}
