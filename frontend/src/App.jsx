@@ -9,14 +9,10 @@ import ShowRecipe from "./Components/ShowRecipe.jsx";
 import RecipeIsPrivate from './Components/RecipeIsPrivate.jsx';
 import Navbar from './Components/Navbar.jsx';
 import Logout from './Components/Logout.jsx';
+import EditRecipe from './Components/EditRecipe.jsx';
 import './App.css';
-import {useState, useEffect} from "react";
 
 function Root() {
-  const [username, setUsername] = useState("");
-  useEffect(() => {
-    setUsername(localStorage.getItem("recipeAppUsername"));
-  }, [])
 
   return (
     <div className="App">
@@ -33,6 +29,7 @@ function Root() {
           <Route path="/profile/:username" element={<Profile />} />
           <Route path="/newRecipe" element={<NewRecipe />} />
           <Route path="/recipes/:id" element={<ShowRecipe />} />
+          <Route path="/editRecipe/:id" element={<EditRecipe />} />
         </Routes>
       </div>
     </div>
