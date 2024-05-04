@@ -14,9 +14,11 @@ function ShowRecipe() {
     const [steps, setSteps] = useState([]);
     const [reviews, setReviews] = useState([]);
     const [rating, setRating] = useState(3); // Initial rating value
-    const [averageRating, setAverageRating] = useState("No ratings yet.")
+    const [averageRating, setAverageRating] = useState("No ratings yet.");
+    const [loggedIn, setLoggedIn] = useState(false);
 
     useEffect(() => {
+        checkLoggedIn();
         getRecipe();
         getIngredients();
         getAllergens();
@@ -25,6 +27,14 @@ function ShowRecipe() {
         redirectIfPrivate();
         getAverageRating();
     }, [])
+
+    async function checkLoggedIn() {
+        let result = await axios.post("http://localhost:5000/logged_in", {
+            username: localStorage.getItem("recipeAppUsername"),
+            session_token: localStorage.getItem("recipeAppSession"),
+        });
+        if (result["data"]["success"]) setLoggedIn(true);
+    }
 
     async function getRecipe() {
         // recipes are an array: [is, chef_id, title, cusine, is_public]
@@ -72,7 +82,7 @@ function ShowRecipe() {
     async function redirectIfPrivate() {
         let isPrivate = !(await getRecipe());
         let ownsRecipe = await axios.post("http://localhost:5000/owns_recipe", {
-            username: sessionStorage.getItem("recipeAppUsername"),
+            username: localStorage.getItem("recipeAppUsername"),
             recipe_id: id
         })
 
@@ -94,8 +104,8 @@ function ShowRecipe() {
     
     async function remixRecipe() {
         let result = await axios.post("http://localhost:5000/create_recipe", {
-            username: sessionStorage.getItem("recipeAppUsername"),
-            title: recipe[2],
+            username: localStorage.getItem("recipeAppUsername"),
+            title: recipe[2] + " remix",
             cuisine: recipe[3],
             is_public: recipe[4]
         });
@@ -129,11 +139,16 @@ function ShowRecipe() {
             });
         }
         
-        return navigate(`/recipes/${recipeId}`);
+        return navigate(`/`);
+    }
+
+    function getRemixButton() {
+        if (loggedIn) return <button onClick={(e) => remixRecipe()}>Remix</button>
+        return "";
     }
 
     async function saveRecipe() {
-        let result = await axios.post("http://localhost:5000/create_recipe", {
+        let result = await axios.post("http://localhost:5000/create_saved_recipe", {
             username: sessionStorage.getItem("recipeAppUsername"),
             title: recipe[2],
             cuisine: recipe[3],
@@ -180,8 +195,9 @@ function ShowRecipe() {
                 <h3>Rating: {averageRating} </h3>
                 <button onClick={(e) => remixRecipe()}>Remix</button>
                 <button onClick={(e) => saveRecipe()}>Save</button>
+                {getRemixButton()}
             </div>
-            <RatingSlider username={sessionStorage.getItem("recipeAppUsername")}
+            <RatingSlider username={localStorage.getItem("recipeAppUsername")}
             recipeId={id} 
             rating={rating} 
             setRating={setRating} />

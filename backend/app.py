@@ -247,6 +247,27 @@ def create_recipe():
     cur.close()
     return {'success': True, 'recipe_id': recipe_id}
 
+@app.route("/create_saved_recipe", methods=['POST'])
+def create_recipe():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    chef_id = get_user(cur, data["username"])
+    title = data["title"]
+    cuisine = data["cuisine"]
+    is_public = data["is_public"]
+
+    sql_insert = """
+    INSERT INTO savedRecipes (chef_id, title, cuisine, is_public)
+    VALUES (%s, %s, %s, %s)
+    RETURNING id
+    """
+
+    cur.execute(sql_insert, (chef_id, title, cuisine, is_public,))
+    recipe_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+    return {'success': True, 'recipe_id': recipe_id}
+
 @app.route("/create_ingredient", methods=['POST'])
 def create_ingredient():
     cur = conn.cursor()
@@ -314,6 +335,24 @@ def get_all_user_recipes():
     query = "SELECT * FROM recipes WHERE chef_id = %s"
     if get_only_public:
         query = "SELECT * FROM recipes WHERE chef_id = %s AND is_public = true"
+    cur.execute(query, (user_id,))
+    recipes = cur.fetchall()
+
+    cur.close()
+    return {"success": True, "recipes": recipes}
+
+@app.route("/get_saved_recipes", methods=['POST'])
+def get_all_saved_recipes():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    username = data["username"]
+    user_id = get_user(cur, username) # get user id from username
+    get_only_public = data["get_only_public"]
+
+    print(get_only_public)
+    query = "SELECT * FROM savedRecipes WHERE chef_id = %s"
+    if get_only_public:
+        query = "SELECT * FROM savedRecipes WHERE chef_id = %s AND is_public = true"
     cur.execute(query, (user_id,))
     recipes = cur.fetchall()
 
