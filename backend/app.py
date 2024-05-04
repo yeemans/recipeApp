@@ -497,6 +497,50 @@ def get_average_rating():
     print(average_rating)
     return {"success": True, "averageRating": average_rating}
 
+@app.route("/delete_ingredients_steps_allergens", methods=['POST'])
+def delete_ingredients_steps_allergens():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+
+    sql_delete = """
+                DELETE FROM ingredients
+                WHERE recipe_id = %s
+                 """
+    cur.execute(sql_delete, (recipe_id,)) 
+
+    sql_delete = """
+                DELETE FROM steps
+                WHERE recipe_id = %s
+                 """
+    cur.execute(sql_delete, (recipe_id,)) 
+
+    sql_delete = """
+            DELETE FROM allergens
+            WHERE recipe_id = %s
+                """
+    cur.execute(sql_delete, (recipe_id,)) 
+    conn.commit()
+    cur.close()
+    return {"success": True}
+
+@app.route("/rewrite_title_and_cuisine", methods=['POST'])
+def rewrite_title_and_cuisine():
+    cur = conn.cursor()
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+    title = data["title"]
+    cuisine = data["cuisine"]
+
+    sql_update = """
+                UPDATE recipes
+                SET title = %s, cuisine = %s
+                WHERE id = %s
+                 """
+    cur.execute(sql_update, (title, cuisine, recipe_id,)) 
+    conn.commit()
+    cur.close()
+    return {"success": True}
 
 def check_user_exists(cur, username):
     query = sql.SQL("SELECT 1 FROM users WHERE username = {}").format(sql.Literal(username))

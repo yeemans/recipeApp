@@ -16,6 +16,7 @@ function ShowRecipe() {
     const [rating, setRating] = useState(3); // Initial rating value
     const [averageRating, setAverageRating] = useState("No ratings yet.");
     const [loggedIn, setLoggedIn] = useState(false);
+    const [isRecipeOwner, setIsRecipeOwner] = useState(false);
 
     useEffect(() => {
         checkLoggedIn();
@@ -86,8 +87,7 @@ function ShowRecipe() {
             recipe_id: id
         })
 
-        console.log(isPrivate)
-        console.log(ownsRecipe["data"]["success"])
+        setIsRecipeOwner(ownsRecipe["data"]["success"])
         if (isPrivate && !ownsRecipe["data"]["success"])
             return navigate("/recipeIsPrivate")
     }
@@ -147,6 +147,13 @@ function ShowRecipe() {
         return "";
     }
 
+    function getEditButton() {
+        if (isRecipeOwner) return <button onClick={() => {return navigate(`/editRecipe/${id}`)} }>
+            Edit
+        </button>
+        return ""
+    }
+
     return(
         <div>
             <div> 
@@ -154,6 +161,7 @@ function ShowRecipe() {
                 <h3>{`Cuisine: ${recipe[3]}`}</h3>
                 <h3>Rating: {averageRating} </h3>
                 {getRemixButton()}
+                {getEditButton()}
             </div>
             <RatingSlider username={localStorage.getItem("recipeAppUsername")}
             recipeId={id} 
