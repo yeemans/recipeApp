@@ -97,7 +97,6 @@ function NewRecipe() {
         });
         
         let recipeId = result["data"]["recipe_id"]
-        console.log(result);
 
         // create ingredient entries
         for (let ing of ingredients) {
@@ -106,7 +105,6 @@ function NewRecipe() {
                 name: ing,
             });
         }
-        console.log(result);
 
         // create step entries
         for (let i = 0; i < steps.length; i++) {
@@ -115,7 +113,6 @@ function NewRecipe() {
                 html: getHtml(i),
             });
         }
-        console.log(result);
 
         // create allergen entries
         for (let i = 0; i < allergens.length; i++) {
