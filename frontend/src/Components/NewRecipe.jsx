@@ -23,6 +23,11 @@ function NewRecipe() {
     const [currStepImageLinks, setCurrStepImageLinks] = useState([]);
     const [stepImageLinks, setStepImageLinks] = useState([]);
 
+    const [modifyingItem, setModifyingItem] = useState(false);
+    const [modifyingIngredientIndex, setModifyingIngredientIndex] = useState(null);
+    const [modifyingAllergenIndex, setModifyingAllergenIndex] = useState(null);
+    const [modifyingStepIndex, setModifyingStepIndex] = useState(null);
+
     const navigate = useNavigate();
     useEffect(() => {
         checkLoggedIn();
@@ -41,6 +46,7 @@ function NewRecipe() {
         // bounce user back to login if not logged in
         if (!result["data"]["success"]) return navigate(`/login`);
     }
+
     function addIngredient() {
         const updatedIngredients = [...ingredients, ingredient];
         setIngredients(updatedIngredients);
@@ -84,9 +90,67 @@ function NewRecipe() {
         else setStepEditorVisible("hidden");
     }
 
+    function getIngredientButton() {
+        if (modifyingItem) 
+            return <button onClick={()=> modifyIngredient()}>Modify Ingredient</button>
+        
+        return <button onClick={() => addIngredient()}>Save Ingredient</button>
+    }
+
+    function getAllergenButton() {
+        if (modifyingItem)
+            return <button onClick={() => modifyAllergen()}>Modify Allergen</button>
+
+        return <button onClick={() => addAllergen()}>Save Allergen</button>
+    }
+
+    function getStepButton() {
+        if (modifyingItem)
+            return <button onClick={() => modifyStep()}>Modify Step</button>
+
+        return <button onClick={() => saveStep()}>Save Step</button>
+    }
+
+    function modifyIngredient() {
+        let updatedIngredients = [...ingredients];
+        updatedIngredients[modifyingIngredientIndex] = ingredient;
+        setIngredients(updatedIngredients);
+
+        // no longer editing, cleanup
+        setIngredientEditorVisible("hidden");
+        setModifyingIngredientIndex(null);
+        setModifyingItem(false);
+    }
+
+    function modifyAllergen() {
+        let updatedAllergens = [...allergens];
+        updatedAllergens[modifyingAllergenIndex] = allergen;
+        setAllergens(updatedAllergens);
+
+        // no longer editing, cleanup
+        setAllergenEditorVisible("hidden");
+        setModifyingAllergenIndex(null);
+        setModifyingItem(false);
+    }
+
+    function modifyStep() {
+        let updatedSteps = [...steps];
+        updatedSteps[modifyingStepIndex] = currStep;
+        setSteps(updatedSteps);
+
+        let updatedStepImageLinks = [...stepImageLinks];
+        updatedStepImageLinks[modifyingStepIndex] = currStepImageLinks;
+        setStepImageLinks(updatedStepImageLinks);
+
+        // no longer editing, cleanup
+        setStepEditorVisible("hidden");
+        setModifyingStepIndex(null);
+        setModifyingItem(false);
+    }
+
     const handleIsPublicChange = (event) => {
         setIsPublic(event.target.checked); // Update the checked state
-      };
+    };
 
     async function submitRecipe() {
         let result = await axios.post("http://localhost:5000/create_recipe", {
@@ -133,6 +197,33 @@ function NewRecipe() {
         return paragraph
     }
 
+    function enableModifyIngredient(ingredientName, index) {
+        setModifyingItem(true);
+        setIngredient(ingredientName);
+        setIngredientEditorVisible("visible");
+        setModifyingIngredientIndex(index);
+    }
+
+    function enableModifyAllergen(allergenName, index) {
+        setModifyingItem(true);
+        setAllergen(allergenName);
+        setAllergenEditorVisible("visible");
+        setModifyingAllergenIndex(index);
+    }
+
+    function enableModifyStep(step, index) {
+        setModifyingItem(true);
+        setCurrStep(step);
+        setStepEditorVisible("visible");
+        setModifyingStepIndex(index);
+        setCurrStepImageLinks(stepImageLinks[index]);
+    }
+
+    function deleteImageLink(index) {
+        const updatedLinks = currStepImageLinks.filter((item, idx) => idx !== index);
+        setCurrStepImageLinks(updatedLinks);
+    }
+
     return(
         <div>
             <label htmlFor="title">Recipe Title:</label>
@@ -144,28 +235,30 @@ function NewRecipe() {
             <div className={ingredientEditorVisible}>
                 <h1>Ingredients</h1>
                 <input type="text" value={ingredient} onChange={(e) => setIngredient(e.target.value)} />
-                <button onClick={() => addIngredient()}>Save Ingredient</button>
+                {getIngredientButton()}
             </div>
 
             <div className={allergenEditorVisible}>
                 <h1>Allergens (If Applicable)</h1>
                 <input type="text" value={allergen} onChange={(e) => setAllergen(e.target.value)} />
-                <button onClick={() => addAllergen()}>Save Allergen</button>
+                {getAllergenButton()}
             </div>
             
             <div className={stepEditorVisible}>
-
                 <h1>Step</h1>
                 <textarea value={currStep} onChange={(e) => setCurrStep(e.target.value)} />
-                <button onClick={() => saveStep()}>Save Step</button>
+                {getStepButton()}
+
                 <button onClick={() => promptImageLink()}>Link Image</button>
                 <p>Images linked in this step:</p>
                 <ul>
-                    {currStepImageLinks.map((imageLink) => (
-                        <li>{imageLink}</li>
+                    {currStepImageLinks.map((imageLink, index) => (
+                        <div>
+                            <li>{imageLink}</li>
+                            <button onClick={() => deleteImageLink(index)}>Delete Image</button>
+                        </div>
                     ))}
                 </ul>
-
             </div>
 
             <button onClick={() => toggleIngredientEditor()}>Toggle Ingredient Editor</button>
@@ -178,15 +271,25 @@ function NewRecipe() {
 
                 <h1>Ingredients</h1>
                 <ul>
-                    {ingredients.map((ingredient) => (
-                        <li>{ingredient}</li> 
+                    {ingredients.map((ingredientName, index) => (
+                        <div>
+                            <li>{ingredientName}</li> 
+                            <button onClick={() => enableModifyIngredient(ingredientName, index)}>
+                                Edit Ingredient
+                            </button>
+                        </div>
                     ))}
                 </ul>
 
                 <h1>Allergens</h1>
                 <ul>
-                    {allergens.map((allergen) => (
-                        <li>{allergen}</li> 
+                    {allergens.map((allergenName, index) => (
+                        <div>
+                            <li>{allergenName}</li>
+                            <button onClick={() => enableModifyAllergen(allergenName, index)}>
+                                Edit Allergen
+                            </button>
+                        </div>
                     ))}
                 </ul>
 
@@ -196,6 +299,10 @@ function NewRecipe() {
                         <li>
                             <div key={stepIndex}> {/* Wrap the content in a parent element */}
                                 <p>{step}</p>
+                                <button onClick={() => enableModifyStep(step, stepIndex)}>
+                                    Edit Step
+                                </button>
+
                                 {/* Iterate through the images of this step and render them */}
                                 {stepImageLinks[stepIndex].map((imageLink, imageIndex) => (
                                     <img className="stepImage" key={imageIndex} src={imageLink} alt={`Step ${stepIndex + 1} Image ${imageIndex + 1}`} />
