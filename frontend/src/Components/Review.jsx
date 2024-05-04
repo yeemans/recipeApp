@@ -15,7 +15,7 @@ function Review(props) {
     async function markHelpful(helpful) {
         await axios.post("http://localhost:5000/mark_helpful", {
             review_id: props.review[0],
-            username: sessionStorage.getItem("recipeAppUsername"),
+            username: localStorage.getItem("recipeAppUsername"),
             helpful: helpful
         })
         // reload page
@@ -25,7 +25,7 @@ function Review(props) {
     async function getHelpfulCounts() {
         let result = await axios.post("http://localhost:5000/get_review_helpful_counts", {
             review_id: props.review[0],
-            username: sessionStorage.getItem("recipeAppUsername"),
+            username: localStorage.getItem("recipeAppUsername"),
         })
 
         console.log(result["data"]["success"])
@@ -37,8 +37,8 @@ function Review(props) {
 
     async function checkLoggedIn() {
         let result = await axios.post("http://localhost:5000/logged_in", {
-            username: sessionStorage.getItem("recipeAppUsername"),
-            session_token: sessionStorage.getItem("recipeAppSession"),
+            username: localStorage.getItem("recipeAppUsername"),
+            session_token: localStorage.getItem("recipeAppSession"),
         });
         if (result["data"]["success"]) setLoggedIn(true);
     }

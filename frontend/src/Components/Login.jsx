@@ -12,13 +12,13 @@ function Login() {
     let [errorMessage, setErrorMessage] = useState("");
     let navigate = useNavigate();
 
-    async function checkLoggedIn() {
+    async function checkLoggedIn() { 
         let result = await axios.post("http://localhost:5000/logged_in", {
-            username: sessionStorage.getItem("recipeAppUsername"),
-            session_token: sessionStorage.getItem("recipeAppSession"),
+            username: localStorage.getItem("recipeAppUsername"),
+            session_token: localStorage.getItem("recipeAppSession"),
         });
 
-        let profileLink = `/profile/${sessionStorage.getItem("recipeAppUsername")}`;
+        let profileLink = `/profile/${localStorage.getItem("recipeAppUsername")}`;
         if (result["data"]["success"]) return navigate(profileLink);
     }
     
@@ -30,8 +30,8 @@ function Login() {
 
         if (result["data"]["success"]) {
             // set session token and go to homepage
-            sessionStorage.setItem("recipeAppSession", result["data"]["session_token"])
-            sessionStorage.setItem("recipeAppUsername", username);
+            localStorage.setItem("recipeAppSession", result["data"]["session_token"])
+            localStorage.setItem("recipeAppUsername", username);
             return navigate(`/profile/${username}`);
         }
         setErrorMessage(result["data"]["message"])

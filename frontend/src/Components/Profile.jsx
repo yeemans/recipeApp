@@ -40,12 +40,12 @@ function Profile() {
     }
 
     function ownsProfile() {
-        return sessionStorage.getItem("recipeAppUsername") === username;
+        return localStorage.getItem("recipeAppUsername") === username;
     }
 
     function logout() {
-        sessionStorage.removeItem("recipeAppSession");
-        sessionStorage.removeItem("recipeAppUsername")
+        localStorage.removeItem("recipeAppSession");
+        localStorage.removeItem("recipeAppUsername")
         return navigate('/login');
     }
 
@@ -57,8 +57,8 @@ function Profile() {
     }
 
     async function submitBio() {
-        let editor = sessionStorage.getItem("recipeAppUsername");
-        let sessionToken = sessionStorage.getItem("recipeAppSession");
+        let editor = localStorage.getItem("recipeAppUsername");
+        let sessionToken = localStorage.getItem("recipeAppSession");
         setEditingBio("hidden");
 
         await axios.post("http://localhost:5000/set_bio", {

@@ -20,8 +20,8 @@ function AddReview(props) {
 
     async function checkLoggedIn() {
         let result = await axios.post("http://localhost:5000/logged_in", {
-            username: sessionStorage.getItem("recipeAppUsername"),
-            session_token: sessionStorage.getItem("recipeAppSession"),
+            username: localStorage.getItem("recipeAppUsername"),
+            session_token: localStorage.getItem("recipeAppSession"),
         });
         if (result["data"]["success"]) setShowAddReview("visible");
     }
@@ -30,7 +30,7 @@ function AddReview(props) {
         let result = await axios.post("http://localhost:5000/create_review", {
             recipe_id: id,
             review_body: reviewBody,
-            username: sessionStorage.getItem("recipeAppUsername")
+            username: localStorage.getItem("recipeAppUsername")
         })
 
         // refresh the page

@@ -14,9 +14,11 @@ function ShowRecipe() {
     const [steps, setSteps] = useState([]);
     const [reviews, setReviews] = useState([]);
     const [rating, setRating] = useState(3); // Initial rating value
-    const [averageRating, setAverageRating] = useState("No ratings yet.")
+    const [averageRating, setAverageRating] = useState("No ratings yet.");
+    const [loggedIn, setLoggedIn] = useState(false);
 
     useEffect(() => {
+        checkLoggedIn();
         getRecipe();
         getIngredients();
         getAllergens();
@@ -25,6 +27,14 @@ function ShowRecipe() {
         redirectIfPrivate();
         getAverageRating();
     }, [])
+
+    async function checkLoggedIn() {
+        let result = await axios.post("http://localhost:5000/logged_in", {
+            username: localStorage.getItem("recipeAppUsername"),
+            session_token: localStorage.getItem("recipeAppSession"),
+        });
+        if (result["data"]["success"]) setLoggedIn(true);
+    }
 
     async function getRecipe() {
         // recipes are an array: [is, chef_id, title, cusine, is_public]
@@ -72,7 +82,7 @@ function ShowRecipe() {
     async function redirectIfPrivate() {
         let isPrivate = !(await getRecipe());
         let ownsRecipe = await axios.post("http://localhost:5000/owns_recipe", {
-            username: sessionStorage.getItem("recipeAppUsername"),
+            username: localStorage.getItem("recipeAppUsername"),
             recipe_id: id
         })
 
@@ -91,14 +101,61 @@ function ShowRecipe() {
             setAverageRating(Math.round(result["data"]["averageRating"] * 100) / 100) 
     }
 
+    
+    async function remixRecipe() {
+        let result = await axios.post("http://localhost:5000/create_recipe", {
+            username: localStorage.getItem("recipeAppUsername"),
+            title: recipe[2] + " remix",
+            cuisine: recipe[3],
+            is_public: recipe[4]
+        });
+        
+        let recipeId = result["data"]["recipe_id"]
+        // create ingredient entries
+        for (let ing of ingredients) {
+            // ingredients is an array [id, recipe_id, name]
+            let ingName  = ing[2]
+            result = await axios.post("http://localhost:5000/create_ingredient", {
+                recipe_id: recipeId,
+                name: ingName
+            });
+        }
+
+        // create step entries
+        for (let i = 0; i < steps.length; i++) {
+            // steps is an array [id, recipe_id, html]
+            result = await axios.post("http://localhost:5000/create_step", {
+                recipe_id: recipeId,
+                html: steps[i][2],
+            });
+        }
+
+        // create allergen entries
+        for (let i = 0; i < allergens.length; i++) {
+            // allergens is an array [id, recipe_id, name]
+            result = await axios.post("http://localhost:5000/create_allergen", {
+                recipe_id: recipeId,
+                name: allergens[i][2],
+            });
+        }
+        
+        return navigate(`/`);
+    }
+
+    function getRemixButton() {
+        if (loggedIn) return <button onClick={(e) => remixRecipe()}>Remix</button>
+        return "";
+    }
+
     return(
         <div>
             <div> 
                 <h1>{recipe[2]}</h1>
                 <h3>{`Cuisine: ${recipe[3]}`}</h3>
                 <h3>Rating: {averageRating} </h3>
+                {getRemixButton()}
             </div>
-            <RatingSlider username={sessionStorage.getItem("recipeAppUsername")}
+            <RatingSlider username={localStorage.getItem("recipeAppUsername")}
             recipeId={id} 
             rating={rating} 
             setRating={setRating} />

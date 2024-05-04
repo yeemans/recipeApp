@@ -5,8 +5,8 @@ function Logout() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        sessionStorage.removeItem("recipeAppSession");
-        sessionStorage.removeItem("recipeAppUsername");
+        localStorage.removeItem("recipeAppSession");
+        localStorage.removeItem("recipeAppUsername");
         return navigate('/login');
     }, [])
 

@@ -10,9 +10,14 @@ import RecipeIsPrivate from './Components/RecipeIsPrivate.jsx';
 import Navbar from './Components/Navbar.jsx';
 import Logout from './Components/Logout.jsx';
 import './App.css';
-
+import {useState, useEffect} from "react";
 
 function Root() {
+  const [username, setUsername] = useState("");
+  useEffect(() => {
+    setUsername(localStorage.getItem("recipeAppUsername"));
+  }, [])
+
   return (
     <div className="App">
       <div className="main-content">
