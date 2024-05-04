@@ -1,0 +1,34 @@
+.navbar {
+    padding: 0;
+}
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 10vh;
+    min-height: 60px;
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    background-color: #ffffff;
+}
+
+.link-container {
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.link-container:hover {
+    cursor: pointer;
+    opacity: 80%;
+}
+
+.link-container a {
+    font-size: 16px;
+    font-weight: bolder;
+}
+
+.link-container:hover a{
+    text-decoration: underline;
+    opacity: .9;
+}
