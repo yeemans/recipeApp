@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS reviews (
 )
 """
 # Execute a command: this creates a new table
-cur.execute('DROP TABLE IF EXISTS reviews;')
+cur.execute('DROP TABLE IF EXISTS reviews CASCADE;')
 cur.execute(create_reviews_table)
 
 

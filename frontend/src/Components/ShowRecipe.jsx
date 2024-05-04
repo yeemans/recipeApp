@@ -72,7 +72,7 @@ function ShowRecipe() {
     async function redirectIfPrivate() {
         let isPrivate = !(await getRecipe());
         let ownsRecipe = await axios.post("http://localhost:5000/owns_recipe", {
-            username: sessionStorage.getItem("recipeAppUsername"),
+            username: localStorage.getItem("recipeAppUsername"),
             recipe_id: id
         })
 
@@ -94,7 +94,7 @@ function ShowRecipe() {
     
     async function remixRecipe() {
         let result = await axios.post("http://localhost:5000/create_recipe", {
-            username: sessionStorage.getItem("recipeAppUsername"),
+            username: localStorage.getItem("recipeAppUsername"),
             title: recipe[2],
             cuisine: recipe[3],
             is_public: recipe[4]
@@ -140,7 +140,7 @@ function ShowRecipe() {
                 <h3>Rating: {averageRating} </h3>
                 <button onClick={(e) => remixRecipe()}>Remix</button>
             </div>
-            <RatingSlider username={sessionStorage.getItem("recipeAppUsername")}
+            <RatingSlider username={localStorage.getItem("recipeAppUsername")}
             recipeId={id} 
             rating={rating} 
             setRating={setRating} />
