@@ -16,8 +16,8 @@ function Register() {
 
         if (result["data"]["success"]) {
             // set session token and go to homepage
-            sessionStorage.setItem("recipeAppSession", result["data"]["session_token"]);
-            sessionStorage.setItem("recipeAppUsername", username);
+            await localStorage.setItem("recipeAppSession", result["data"]["session_token"]);
+            await localStorage.setItem("recipeAppUsername", username);
             return navigate(`/profile/${username}`);
         }
         setErrorMessage(result["data"]["message"])

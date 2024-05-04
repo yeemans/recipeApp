@@ -12,7 +12,7 @@ function Login() {
     let [errorMessage, setErrorMessage] = useState("");
     let navigate = useNavigate();
 
-    async function checkLoggedIn() {
+    async function checkLoggedIn() { 
         let result = await axios.post("http://localhost:5000/logged_in", {
             username: localStorage.getItem("recipeAppUsername"),
             session_token: localStorage.getItem("recipeAppSession"),
