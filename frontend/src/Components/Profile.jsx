@@ -91,8 +91,21 @@ function Profile() {
                     </div>
                 ))}
             </div>
+
+            <h1>Saved Recipes</h1>
+            <div>
+                {recipes.map((recipe) => (
+                    // recipe[0] is the recipeId, recipe[2] is the title
+                    <div>
+                        <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a>
+                    </div>
+                ))}
+            </div>
             <button onClick={() => logout()}>Log Out</button>
         </div>
+    )
+        </div>
+        
     )
 }
 
