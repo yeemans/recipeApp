@@ -1,3 +1,4 @@
+Please install Postgres before using this app. https://www.postgresql.org/download/
 First Time Setup
 1. Create a terminal
 2. cd backend
