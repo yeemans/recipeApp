@@ -132,6 +132,46 @@ function ShowRecipe() {
         return navigate(`/recipes/${recipeId}`);
     }
 
+    async function saveRecipe() {
+        let result = await axios.post("http://localhost:5000/create_recipe", {
+            username: sessionStorage.getItem("recipeAppUsername"),
+            title: recipe[2],
+            cuisine: recipe[3],
+            is_public: recipe[4]
+        });
+        
+        let recipeId = result["data"]["recipe_id"]
+        // create ingredient entries
+        for (let ing of ingredients) {
+            // ingredients is an array [id, recipe_id, name]
+            let ingName  = ing[2]
+            result = await axios.post("http://localhost:5000/create_ingredient", {
+                recipe_id: recipeId,
+                name: ingName
+            });
+        }
+
+        // create step entries
+        for (let i = 0; i < steps.length; i++) {
+            // steps is an array [id, recipe_id, html]
+            result = await axios.post("http://localhost:5000/create_step", {
+                recipe_id: recipeId,
+                html: steps[i][2],
+            });
+        }
+
+        // create allergen entries
+        for (let i = 0; i < allergens.length; i++) {
+            // allergens is an array [id, recipe_id, name]
+            result = await axios.post("http://localhost:5000/create_allergen", {
+                recipe_id: recipeId,
+                name: allergens[i][2],
+            });
+        }
+        
+        return navigate(`/recipes/${recipeId}`);
+    }
+
     return(
         <div>
             <div> 
@@ -139,6 +179,7 @@ function ShowRecipe() {
                 <h3>{`Cuisine: ${recipe[3]}`}</h3>
                 <h3>Rating: {averageRating} </h3>
                 <button onClick={(e) => remixRecipe()}>Remix</button>
+                <button onClick={(e) => saveRecipe()}>Save</button>
             </div>
             <RatingSlider username={sessionStorage.getItem("recipeAppUsername")}
             recipeId={id} 
