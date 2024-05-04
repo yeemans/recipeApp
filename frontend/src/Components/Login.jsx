@@ -61,11 +61,13 @@ function Login() {
                     value={password} />
             </div>
 
-            <div className="button-container">
-                <button className="login-button" onClick={(e) => loginUser()}>Login</button>
-            </div>
-            <div className="button-container">
-            <button className="register-button" onClick={() => {return navigate('/register')} }>Register</button>
+            <div className="buttons-container">
+                <div className="button-container">
+                    <button className="login-button" onClick={(e) => loginUser()}>Login</button>
+                </div>
+                <div className="button-container">
+                    <button className="register-button" onClick={() => {return navigate('/register')} }>Register</button>
+                </div>
             </div>
            
         </div>
