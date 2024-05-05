@@ -134,6 +134,17 @@ def get_ratings():
     ratings_json = jsonify(ratings)
     return ratings_json
 
+@app.route('/collaborations', methods=['GET'])
+def get_collaborations():
+    # Create a cursor
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT * FROM collaborations")
+    ratings = cur.fetchall()
+    cur.close()
+    ratings_json = jsonify(ratings)
+    return ratings_json
+
 @app.route('/register', methods=['POST'])
 def register():
     session_token = None
@@ -327,6 +338,24 @@ def get_all_user_recipes():
     cur.close()
     return {"success": True, "recipes": recipes}
 
+@app.route("/get_collab_recipes", methods=['POST'])
+def get_collab_recipes():
+    db = get_db()
+    cur = db.cursor()
+    data = json.loads(request.data)
+    username = data["username"]
+    user_id = get_user(cur, username) # get user id from username
+
+    query = """SELECT * FROM recipes 
+                JOIN collaborations on recipes.id = collaborations.recipe_id
+                WHERE collaborations.user_id = %s"""
+
+    cur.execute(query, (user_id,))
+    recipes = cur.fetchall()
+
+    cur.close()
+    return {"success": True, "recipes": recipes}
+
 @app.route("/get_recipe_by_id", methods=['POST'])
 def get_recipe_by_id():
     db = get_db()
@@ -422,7 +451,15 @@ def owns_recipe():
     if not user_id: return {'success': False}
 
     recipe_owner = get_recipe_owner(cur, recipe_id)
-    success = user_id == recipe_owner
+    owners = [recipe_owner]
+
+    collaborators = get_collaborators(cur, recipe_id)
+    if collaborators: 
+        # get the collaborator id from tuple
+        owners.extend([c[0] for c in collaborators])
+
+    print(owners)
+    success = user_id in owners
 
     return {'success': success}
 
@@ -718,5 +755,13 @@ def update_bio(cur, user_id, new_bio):
     return cur.execute(sql_insert, (new_bio, user_id,))
     # returns whether or not update success
 
+def get_collaborators(cur, recipe_id):
+    sql_select = """
+    SELECT user_id
+    FROM collaborations
+    WHERE recipe_id = %s;
+    """
+    cur.execute(sql_select, (recipe_id,))
+    return cur.fetchall()
 if __name__ == '__main__':
     app.run(debug=True)
