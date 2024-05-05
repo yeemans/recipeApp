@@ -94,21 +94,21 @@ function NewRecipe() {
         if (modifyingItem) 
             return <button onClick={()=> modifyIngredient()}>Modify Ingredient</button>
         
-        return <button onClick={() => addIngredient()}>Save Ingredient</button>
+        return <button onClick={() => addIngredient()}>Save</button>
     }
 
     function getAllergenButton() {
         if (modifyingItem)
             return <button onClick={() => modifyAllergen()}>Modify Allergen</button>
 
-        return <button onClick={() => addAllergen()}>Save Allergen</button>
+        return <button onClick={() => addAllergen()}>Save</button>
     }
 
     function getStepButton() {
         if (modifyingItem)
             return <button onClick={() => modifyStep()}>Modify Step</button>
 
-        return <button onClick={() => saveStep()}>Save Step</button>
+        return <button onClick={() => saveStep()}>Save</button>
     }
 
     function modifyIngredient() {
@@ -227,12 +227,12 @@ function NewRecipe() {
 
     return(
         <div>
-            <label htmlFor="title">Recipe Title:</label>
+            <label htmlFor="title">Title: </label>
             <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
-           
-            <label htmlFor="cuisine">Cuisine:</label>
+            <p></p>
+            <label htmlFor="cuisine">Cuisine: </label>
             <input type="text" id="cuisine" value={cuisine} onChange={(e) => setCuisine(e.target.value)} />
-
+            <p></p>
             <div className={ingredientEditorVisible}>
                 <h1>Ingredients</h1>
                 <input type="text" value={ingredient} onChange={(e) => setIngredient(e.target.value)} />
@@ -261,10 +261,6 @@ function NewRecipe() {
                     ))}
                 </ul>
             </div>
-
-            <button onClick={() => toggleIngredientEditor()}>Toggle Ingredient Editor</button>
-            <button onClick={() => toggleAllergenEditor()}>Toggle Allergen Editor</button>
-            <button onClick={() => toggleStepEditor()}>Toggle Step Editor</button>
             
             <div> 
                 <h1>Recipe Preview</h1>
@@ -282,6 +278,8 @@ function NewRecipe() {
                     ))}
                 </ul>
 
+                <button onClick={() => toggleIngredientEditor()}>Toggle Ingredient Editor</button>
+
                 <h1>Allergens</h1>
                 <ul>
                     {allergens.map((allergenName, index) => (
@@ -293,6 +291,8 @@ function NewRecipe() {
                         </div>
                     ))}
                 </ul>
+
+                <button onClick={() => toggleAllergenEditor()}>Toggle Allergen Editor</button>
 
                 <h1>Steps</h1>
                 <ol>
@@ -312,18 +312,28 @@ function NewRecipe() {
                         </li>
                     ))}
                 </ol>
+
+                <button onClick={() => toggleStepEditor()}>Toggle Step Editor</button>
+                <p></p>
+            </div>
+            
+            <div>
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={isPublic}
+                        onChange={handleIsPublicChange}
+                    />
+                    Make Public 
+                </label>
+            </div>
+            
+                <br></br>
+            <div>
+                <button onClick={() => submitRecipe()}>Submit Recipe</button>
             </div>
 
-            <button onClick={() => submitRecipe()}>Submit Recipe</button>
-
-            <label>
-                <input
-                    type="checkbox"
-                    checked={isPublic}
-                    onChange={handleIsPublicChange}
-                />
-                Make Public 
-            </label>
+            
         </div>
     )
 }
