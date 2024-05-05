@@ -11,6 +11,7 @@ import Navbar from './Components/Navbar.jsx';
 import Logout from './Components/Logout.jsx';
 import EditRecipe from './Components/EditRecipe.jsx';
 import AddCollaborator from './Components/AddCollaborator.jsx';
+import Search from './Components/Search.jsx';
 import './App.css';
 
 function Root() {
@@ -32,6 +33,7 @@ function Root() {
           <Route path="/recipes/:id" element={<ShowRecipe />} />
           <Route path="/editRecipe/:id" element={<EditRecipe />} />
           <Route path="/addCollaborator/:id" element={<AddCollaborator />} />
+          <Route path="/search" element={<Search />} />
         </Routes>
       </div>
     </div>

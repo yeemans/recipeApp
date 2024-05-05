@@ -676,6 +676,21 @@ def save_recipe():
     cur.close()
     return {'success': True, 'messsage': "Saved recipe"}
 
+@app.route("/search_recipe", methods=['POST'])
+def search_recipe():
+    db = get_db()
+    cur = db.cursor()
+    data = json.loads(request.data)
+    recipe_title = data["recipe_title"]
+
+
+    query = f"SELECT * FROM recipes WHERE title LIKE '%{recipe_title}%' AND is_public = True"
+    cur.execute(query)
+    recipes = cur.fetchall()
+    cur.close()
+    return {'success': True, 'recipes': recipes}
+
+
 def check_user_exists(cur, username):
     query = "SELECT 1 FROM users WHERE username = %s"
     cur.execute(query, (username,))

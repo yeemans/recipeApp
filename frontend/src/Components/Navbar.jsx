@@ -12,6 +12,10 @@ const Navbar = (props) => {
             <div className="collapse navbar-collapse navbar-container" id="navbarNav">
                 <ul className="navbar-nav">
                     <li className="nav-item link-container">
+                        <Link className="nav-link" to={`/search`}>Search</Link>
+                    </li>
+                    
+                    <li className="nav-item link-container">
                         <Link className="nav-link" to={`/`}>My Profile</Link>
                     </li>
                     <li className="nav-item link-container">
