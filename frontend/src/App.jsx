@@ -10,6 +10,7 @@ import RecipeIsPrivate from './Components/RecipeIsPrivate.jsx';
 import Navbar from './Components/Navbar.jsx';
 import Logout from './Components/Logout.jsx';
 import EditRecipe from './Components/EditRecipe.jsx';
+import AddCollaborator from './Components/AddCollaborator.jsx';
 import './App.css';
 
 function Root() {
@@ -30,6 +31,7 @@ function Root() {
           <Route path="/newRecipe" element={<NewRecipe />} />
           <Route path="/recipes/:id" element={<ShowRecipe />} />
           <Route path="/editRecipe/:id" element={<EditRecipe />} />
+          <Route path="/addCollaborator/:id" element={<AddCollaborator />} />
         </Routes>
       </div>
     </div>

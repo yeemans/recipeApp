@@ -572,6 +572,28 @@ def rewrite_title_and_cuisine():
     cur.close()
     return {"success": True}
 
+@app.route("/create_collab", methods=['POST'])
+def create_collab():
+    db = get_db()
+    cur = db.cursor()
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+    collaborator = data["collaborator"]
+
+    collaborator_id = get_user(cur, collaborator)
+    if not collaborator_id: return {'success': False}
+
+    sql_insert = """
+    INSERT INTO collaborations (recipe_id, user_id)
+    VALUES (%s, %s)
+    """
+
+    print([recipe_id, collaborator_id])
+    cur.execute(sql_insert, (recipe_id, collaborator_id,))
+    db.commit()
+    cur.close()
+    return {'success': True}
+
 def check_user_exists(cur, username):
     query = "SELECT 1 FROM users WHERE username = %s"
     cur.execute(query, (username,))

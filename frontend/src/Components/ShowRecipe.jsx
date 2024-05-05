@@ -158,6 +158,10 @@ function ShowRecipe() {
         return ""
     }
 
+    function addCollaborator() {
+        return navigate(`/addCollaborator/${id}`)
+    }
+
     return(
         <div>
             <div> 
@@ -166,6 +170,7 @@ function ShowRecipe() {
                 <h3>Rating: {averageRating} </h3>
                 {getRemixButton()}
                 {getEditButton()}
+                <button onClick={() => addCollaborator()}>Add Collaborator</button>
             </div>
             <RatingSlider username={localStorage.getItem("recipeAppUsername")}
             recipeId={id} 
