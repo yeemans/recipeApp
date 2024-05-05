@@ -1,10 +1,12 @@
-Please install Postgres before using this app. https://www.postgresql.org/download/
-First Time Setup
+
+- MySQL is required
+First Time Setup (steps 1- 6)
 1. Create a terminal
 2. cd backend
 3. run "pip install -r requirements.txt" in the terminal
 
-4. Create a new user called "new_user" with password "password":
+4. Create a new user called "new_user" with password "password" using your OS's method(instructions for wsl/linux):
+    - sudo apt install mysql-client
     - sudo mysql -u root
     - CREATE USER 'new_user'@'localhost' IDENTIFIED BY 'password';
 
@@ -14,8 +16,6 @@ First Time Setup
     - control + z
 
 6. Run createTables.py
-
-Running the app
 7. cd backend
 8. flask run
 9. open a new terminal
