@@ -28,10 +28,8 @@ function AddCollaborator() {
             recipe_id: id
         })
 
-        if (result["data"]["success"])
-            setMessage(`Collaborator ${collaborator} added to recipe.`)
-        else 
-            setMessage("User not found.")        
+        console.log(result["data"]["message"]);
+        setMessage(result["data"]["message"]);
     }
 
     return(

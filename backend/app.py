@@ -618,7 +618,9 @@ def create_collab():
     collaborator = data["collaborator"]
 
     collaborator_id = get_user(cur, collaborator)
-    if not collaborator_id: return {'success': False}
+    if not collaborator_id: return {'success': False, 'message': "Collaborator not found"}
+    if collab_exists(cur, recipe_id, collaborator_id):
+        return {'success': False, 'message': "Collaborator already on recipe"}
 
     sql_insert = """
     INSERT INTO collaborations (recipe_id, user_id)
@@ -629,7 +631,7 @@ def create_collab():
     cur.execute(sql_insert, (recipe_id, collaborator_id,))
     db.commit()
     cur.close()
-    return {'success': True}
+    return {'success': True, 'messsage': f'{collaborator} added to recipe'}
 
 def check_user_exists(cur, username):
     query = "SELECT 1 FROM users WHERE username = %s"
@@ -763,5 +765,15 @@ def get_collaborators(cur, recipe_id):
     """
     cur.execute(sql_select, (recipe_id,))
     return cur.fetchall()
+
+def collab_exists(cur, recipe_id, user_id):
+    sql_select = """
+    SELECT *
+    FROM collaborations
+    WHERE recipe_id = %s AND user_id = %s;
+    """
+    cur.execute(sql_select, (recipe_id, user_id,))
+    return cur.fetchall()
+
 if __name__ == '__main__':
     app.run(debug=True)
