@@ -158,8 +158,23 @@ function ShowRecipe() {
         return ""
     }
 
+    function getSaveButton() {
+        if (!loggedIn) return ""
+        return <button onClick={() => saveRecipe()}>Save Recipe</button>
+    }
+
     function addCollaborator() {
         return navigate(`/addCollaborator/${id}`)
+    }
+
+    async function saveRecipe() {
+        let username = localStorage.getItem("recipeAppUsername");
+        await axios.post("http://localhost:5000/save_recipe", {
+            recipe_id: id,
+            username: username
+        })
+
+        return navigate(`/profile/${username}`)
     }
 
     return(
@@ -170,6 +185,7 @@ function ShowRecipe() {
                 <h3>Rating: {averageRating} </h3>
                 {getRemixButton()}
                 {getEditButton()}
+                {getSaveButton()}
                 <button onClick={() => addCollaborator()}>Add Collaborator</button>
             </div>
             <RatingSlider username={localStorage.getItem("recipeAppUsername")}

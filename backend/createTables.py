@@ -133,6 +133,17 @@ CREATE TABLE IF NOT EXISTS collaborations (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 )
 """)
+conn.commit()
+
+cur.execute("""
+    CREATE TABLE IF NOT EXISTS savedRecipes (
+    id SERIAL PRIMARY KEY,
+    recipe_id INT,
+    user_id INT,
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+)
+""")
 
 cur.close()
 conn.close()

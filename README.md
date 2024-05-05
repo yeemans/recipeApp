@@ -1,5 +1,5 @@
 
-- MySQL is required
+- MySQL, node, and react are required
 First Time Setup (steps 1- 6)
 1. Create a terminal
 2. cd backend

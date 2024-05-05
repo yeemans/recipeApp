@@ -356,6 +356,25 @@ def get_collab_recipes():
     cur.close()
     return {"success": True, "recipes": recipes}
 
+@app.route("/get_saved_recipes", methods=['POST'])
+def get_saved_recipes():
+    db = get_db()
+    cur = db.cursor()
+    data = json.loads(request.data)
+    username = data["username"]
+    user_id = get_user(cur, username) # get user id from username
+
+    query = """SELECT * FROM recipes 
+                JOIN savedRecipes on recipes.id = savedRecipes.recipe_id
+                WHERE savedRecipes.user_id = %s"""
+
+    cur.execute(query, (user_id,))
+    recipes = cur.fetchall()
+
+    cur.close()
+    return {"success": True, "recipes": recipes}
+
+
 @app.route("/get_recipe_by_id", methods=['POST'])
 def get_recipe_by_id():
     db = get_db()
@@ -631,7 +650,31 @@ def create_collab():
     cur.execute(sql_insert, (recipe_id, collaborator_id,))
     db.commit()
     cur.close()
-    return {'success': True, 'messsage': f'{collaborator} added to recipe'}
+    return {'success': True, 'message': f'{collaborator} added to recipe'}
+
+@app.route("/save_recipe", methods=['POST'])
+def save_recipe():
+    db = get_db()
+    cur = db.cursor()
+    data = json.loads(request.data)
+    recipe_id = data["recipe_id"]
+    username = data["username"]
+
+    user_id = get_user(cur, username)
+    if not user_id: return {'success': False, 'message': "User not Found"}
+    if already_saved_recipe(cur, recipe_id, user_id):
+        return {'success': False, 'message': "Already saved recipe"}
+
+    sql_insert = """
+    INSERT INTO savedRecipes (recipe_id, user_id)
+    VALUES (%s, %s)
+    """
+
+    print([recipe_id, user_id])
+    cur.execute(sql_insert, (recipe_id, user_id,))
+    db.commit()
+    cur.close()
+    return {'success': True, 'messsage': "Saved recipe"}
 
 def check_user_exists(cur, username):
     query = "SELECT 1 FROM users WHERE username = %s"
@@ -770,6 +813,16 @@ def collab_exists(cur, recipe_id, user_id):
     sql_select = """
     SELECT *
     FROM collaborations
+    WHERE recipe_id = %s AND user_id = %s;
+    """
+    cur.execute(sql_select, (recipe_id, user_id,))
+    return cur.fetchall()
+
+
+def already_saved_recipe(cur, recipe_id, user_id):
+    sql_select = """
+    SELECT *
+    FROM savedRecipes
     WHERE recipe_id = %s AND user_id = %s;
     """
     cur.execute(sql_select, (recipe_id, user_id,))
