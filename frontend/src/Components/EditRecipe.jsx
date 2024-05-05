@@ -39,7 +39,7 @@ function EditRecipe() {
     }, [])
 
     async function getRecipe() {
-        // recipes are an array: [is, chef_id, title, cusine, is_public]
+        // recipes are an array: [id, chef_id, title, cusine, is_public]
         let recipe = await axios.post("http://localhost:5000/get_recipe_by_id", {
             id: id,
         });
@@ -50,25 +50,25 @@ function EditRecipe() {
     }
 
     async function getIngredients() {
-        console.log(id)
-        // ingredients are an array: [id, recipe_id, name]
+        // ingredients are an array: [id, name, recipeId]
         let ingredients = await axios.post("http://localhost:5000/get_recipe_ingredients", {
             recipe_id: id,
         });
 
         
+        console.log(ingredients["data"]["ingredients"])
         if (ingredients["data"]["success"]) {
-            setIngredients(getThirdElement(ingredients["data"]["ingredients"]))
+            setIngredients(getSecondElement(ingredients["data"]["ingredients"]))
         }
     }
 
     async function getAllergens() {
-        // allergens are an array: [id, recipe_id, name]
+        // allergens are an array: [id, name, recipe_id]
         let allergens = await axios.post("http://localhost:5000/get_recipe_allergens", {
             recipe_id: id,
         });
         if (allergens["data"]["success"]) {
-            setAllergens(getThirdElement(allergens["data"]["allergens"]))
+            setAllergens(getSecondElement(allergens["data"]["allergens"]))
         }
     }
 
@@ -78,9 +78,9 @@ function EditRecipe() {
             recipe_id: id,
         });
         if (steps["data"]["success"]) {
-            let stepHTMLArray = getThirdElement(steps["data"]["steps"]);
+            let stepHTMLArray = getSecondElement(steps["data"]["steps"]);
             setSteps(removeStepsHTML(stepHTMLArray));
-            getStepImageLinks(getThirdElement(steps["data"]["steps"]))
+            getStepImageLinks(getSecondElement(steps["data"]["steps"]))
         }
     }
 
@@ -344,10 +344,10 @@ function EditRecipe() {
         setCurrStepImageLinks(updatedLinks);
     }
 
-    function getThirdElement(twoDArray) {
+    function getSecondElement(twoDArray) {
         let result = []
         for (let array of twoDArray)
-            result.push(array[2])
+            result.push(array[1])
         return result;
     }
 
