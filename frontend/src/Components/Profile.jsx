@@ -7,11 +7,13 @@ function Profile() {
     const [bio, setBio] = useState("");
     const [editingBio, setEditingBio] = useState("hidden");
     const [recipes, setRecipes] = useState([]);
+    const [collabRecipes, setCollabRecipes] = useState([]);
     let navigate = useNavigate();
 
     useEffect(() => {
         getBio();
         getUserRecipes();
+        getCollabRecipes();
     }, [])
 
     async function getBio() {
@@ -69,6 +71,16 @@ function Profile() {
         });
     }
 
+    async function getCollabRecipes() {
+        let result = await axios.post("http://localhost:5000/get_collab_recipes", {
+            username: username
+        })
+
+        console.log(result["data"]["recipes"])
+        if (result["data"]["success"])
+            setCollabRecipes(result["data"]["recipes"])
+    }
+
     return(
         <div>
             <h1>{username}</h1>
@@ -85,6 +97,16 @@ function Profile() {
             <h1>Recipes</h1>
             <div>
                 {recipes.map((recipe) => (
+                    // recipe[0] is the recipeId, recipe[2] is the title
+                    <div>
+                        <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a>
+                    </div>
+                ))}
+            </div>
+
+            <h1>Collaborating On Recipes</h1>
+            <div>
+                {collabRecipes.map((recipe) => (
                     // recipe[0] is the recipeId, recipe[2] is the title
                     <div>
                         <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a>
