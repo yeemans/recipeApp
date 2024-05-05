@@ -19,5 +19,6 @@ Running the app
 8. flask run
 9. open a new terminal
 10. cd frontend
-11. npm run dev
-12. go to localhost:5173 in the browser.
+11. npm i
+12. npm run dev
+13. go to localhost:5173 in the browser.
