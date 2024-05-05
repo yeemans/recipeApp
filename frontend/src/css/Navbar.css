@@ -10,7 +10,7 @@
     width: 100%;
     padding-top: 15px;
     padding-bottom: 15px;
-    background-color: #ffffff;
+    background-color: blanchedalmond;
 }
 
 .link-container {
@@ -26,6 +26,7 @@
 .link-container a {
     font-size: 16px;
     font-weight: bolder;
+    color: rgb(110, 62, 43);
 }
 
 .link-container:hover a{

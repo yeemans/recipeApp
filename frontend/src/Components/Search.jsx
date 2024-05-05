@@ -17,7 +17,8 @@ function Search() {
     return (
         <div>
             <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} />
-            <button onClick={() => submitSearch()}>Search for recipe</button>
+            <p> </p>
+            <button onClick={() => submitSearch()}>Search</button>
 
             {results.map((recipe) => (
                 // recipe[0] is the recipeId, recipe[2] is the title

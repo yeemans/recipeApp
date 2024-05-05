@@ -1,0 +1,39 @@
+a {
+    text-decoration: none;
+    color:beige;
+}
+
+a:visited {
+    color:rgb(183, 235, 255)
+}
+
+a:hover {
+    color:rgb(203, 255, 203);
+}
+
+body {
+   margin-left: 5mm;
+   margin-right: 5mm;
+}
+
+div {
+    margin-left: 1cm;
+    margin-right: 1cm;
+}
+
+button {
+    background-color: burlywood;
+    border-radius:10cm;
+}
+
+button:hover {
+    background-color: beige;
+}
+
+h1, h3 {
+    color: burlywood;
+}
+
+p {
+    color: beige;
+}

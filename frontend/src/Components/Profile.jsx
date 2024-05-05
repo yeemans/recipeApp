@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import '../css/Profile.css'
 
 function Profile() {
     const { username } = useParams(); // username of profile owner
@@ -107,9 +108,9 @@ function Profile() {
             <div>
                 {recipes.map((recipe) => (
                     // recipe[0] is the recipeId, recipe[2] is the title
-                    <div>
-                        <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a>
-                    </div>
+                    <>
+                        <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a><p>  </p>
+                        </>
                 ))}
             </div>
 
@@ -117,21 +118,26 @@ function Profile() {
             <div>
                 {collabRecipes.map((recipe) => (
                     // recipe[0] is the recipeId, recipe[2] is the title
-                    <div>
-                        <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a>
-                    </div>
+                    <>
+                    <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a><p>  </p>
+                    </>
                 ))}
             </div>
-            <button onClick={() => logout()}>Log Out</button>
+            
 
             <h1>Saved Recipes</h1>
             <div>
                 {savedRecipes.map((recipe) => (
                     // recipe[0] is the recipeId, recipe[2] is the title
-                    <div>
-                        <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a>
-                    </div>
+                    <>
+                    <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a><p>  </p>
+                    </>
+                
                 ))}
+            </div>
+    <br></br>
+            <div>
+                <button onClick={() => logout()}>Log Out</button>
             </div>
         </div>
     )
