@@ -11,15 +11,6 @@ a:hover {
     color:rgb(203, 255, 203);
 }
 
-body {
-   margin-left: 5mm;
-   margin-right: 5mm;
-}
-
-div {
-    margin-left: 1cm;
-    margin-right: 1cm;
-}
 
 button {
     background-color: burlywood;
