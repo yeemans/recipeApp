@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "../css/Login.css"
 
 function Login() {
     useEffect(() => {
@@ -38,26 +39,38 @@ function Login() {
     }
 
     return (
-        <div>
-            <div>
+        <div className="page-container">
+        <div className="login-container">
+            <div className="welcome-container">
+            <img class="logo" src="https://www.svgrepo.com/show/76009/chef-hat-outline-symbol.svg"/>
+            </div>
+            <div className="form-container">
                 <p>{errorMessage}</p>
-                <label htmlFor="usernameInput">Username:</label>
                 <input id="usernameInput" 
+                    placeholder="Username"
                     type="text" 
                     onChange={(e) => setUsername(e.target.value)} 
                     value={username} />
             </div>
 
-            <div>
-                <label htmlFor="passwordInput">Password:</label>
+            <div className="form-container">
                 <input id="passwordInput" 
+                    placeholder="Password"
                     type="password" 
                     onChange={(e) => setPassword(e.target.value)} 
                     value={password} />
             </div>
 
-            <button onClick={(e) => loginUser()}>Login</button>
-            <button onClick={() => {return navigate('/register')} }>Register</button>
+            <div className="buttons-container">
+                <div className="button-container">
+                    <button className="login-button" onClick={(e) => loginUser()}>Login</button>
+                </div>
+                <div className="button-container">
+                    <button className="register-button" onClick={() => {return navigate('/register')} }>Register</button>
+                </div>
+            </div>
+           
+        </div>
         </div>
     )
 }

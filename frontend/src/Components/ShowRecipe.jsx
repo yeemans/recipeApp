@@ -16,6 +16,7 @@ function ShowRecipe() {
     const [rating, setRating] = useState(3); // Initial rating value
     const [averageRating, setAverageRating] = useState("No ratings yet.");
     const [loggedIn, setLoggedIn] = useState(false);
+    const [isRecipeOwner, setIsRecipeOwner] = useState(false);
 
     useEffect(() => {
         checkLoggedIn();
@@ -86,8 +87,7 @@ function ShowRecipe() {
             recipe_id: id
         })
 
-        console.log(isPrivate)
-        console.log(ownsRecipe["data"]["success"])
+        setIsRecipeOwner(ownsRecipe["data"]["success"])
         if (isPrivate && !ownsRecipe["data"]["success"])
             return navigate("/recipeIsPrivate")
     }
@@ -147,44 +147,11 @@ function ShowRecipe() {
         return "";
     }
 
-    async function saveRecipe() {
-        let result = await axios.post("http://localhost:5000/create_saved_recipe", {
-            username: sessionStorage.getItem("recipeAppUsername"),
-            title: recipe[2],
-            cuisine: recipe[3],
-            is_public: recipe[4]
-        });
-        
-        let recipeId = result["data"]["recipe_id"]
-        // create ingredient entries
-        for (let ing of ingredients) {
-            // ingredients is an array [id, recipe_id, name]
-            let ingName  = ing[2]
-            result = await axios.post("http://localhost:5000/create_ingredient", {
-                recipe_id: recipeId,
-                name: ingName
-            });
-        }
-
-        // create step entries
-        for (let i = 0; i < steps.length; i++) {
-            // steps is an array [id, recipe_id, html]
-            result = await axios.post("http://localhost:5000/create_step", {
-                recipe_id: recipeId,
-                html: steps[i][2],
-            });
-        }
-
-        // create allergen entries
-        for (let i = 0; i < allergens.length; i++) {
-            // allergens is an array [id, recipe_id, name]
-            result = await axios.post("http://localhost:5000/create_allergen", {
-                recipe_id: recipeId,
-                name: allergens[i][2],
-            });
-        }
-        
-        return navigate(`/recipes/${recipeId}`);
+    function getEditButton() {
+        if (isRecipeOwner) return <button onClick={() => {return navigate(`/editRecipe/${id}`)} }>
+            Edit
+        </button>
+        return ""
     }
 
     return(
@@ -193,9 +160,8 @@ function ShowRecipe() {
                 <h1>{recipe[2]}</h1>
                 <h3>{`Cuisine: ${recipe[3]}`}</h3>
                 <h3>Rating: {averageRating} </h3>
-                <button onClick={(e) => remixRecipe()}>Remix</button>
-                <button onClick={(e) => saveRecipe()}>Save</button>
                 {getRemixButton()}
+                {getEditButton()}
             </div>
             <RatingSlider username={localStorage.getItem("recipeAppUsername")}
             recipeId={id} 
