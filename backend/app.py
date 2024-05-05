@@ -1,30 +1,35 @@
 # use conn.commit for queries that change the database
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, g
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS
 import json
 from psycopg2 import sql
 import secrets
+import mysql.connector
 
 # Create a Flask app
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/' 
 CORS(app)  # Enable CORS for all origins
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:$Peelord69@localhost/recipeDB'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://new_user:password@localhost/recipeDB'
 db = SQLAlchemy(app)
 
-conn = psycopg2.connect(
-    dbname='recipeDB',
-    user='postgres',
-    password='$Peelord69',
-    host='localhost'
-)
+mysql_config = {
+    'host': 'localhost',
+    'user': 'new_user',
+    'password': 'password',
+    'database': 'recipeDB',
+}
 
 # Define a route for the root endpoint
+def get_db():
+    if 'db' not in g:
+        g.db = mysql.connector.connect(**mysql_config)
+    return g.db
+
 @app.route('/')
 def index():
     return "Welcome to the Flask API!"
@@ -33,7 +38,8 @@ def index():
 @app.route('/users', methods=['GET'])
 def get_users():
     # Create a cursor
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    db = get_db()
+    cur = db.cursor()
     cur.execute("SELECT * FROM users")
     users = cur.fetchall()
     cur.close()
@@ -43,7 +49,8 @@ def get_users():
 @app.route('/sessions', methods=['GET'])
 def get_sessions():
     # Create a cursor
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    db = get_db()
+    cur = db.cursor()
     cur.execute("SELECT * FROM sessions")
     sessions = cur.fetchall()
     cur.close()
@@ -53,7 +60,8 @@ def get_sessions():
 @app.route('/recipes', methods=['GET'])
 def get_recipes():
     # Create a cursor
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    db = get_db()
+    cur = db.cursor()
     cur.execute("SELECT * FROM recipes")
     recipes = cur.fetchall()
     cur.close()
@@ -63,7 +71,8 @@ def get_recipes():
 @app.route('/ingredients', methods=['GET'])
 def get_ingredients():
     # Create a cursor
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    db = get_db()
+    cur = db.cursor()
     cur.execute("SELECT * FROM ingredients")
     ingredients = cur.fetchall()
     cur.close()
@@ -73,7 +82,8 @@ def get_ingredients():
 @app.route('/steps', methods=['GET'])
 def get_steps():
     # Create a cursor
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    db = get_db()
+    cur = db.cursor()
     cur.execute("SELECT * FROM steps")
     steps = cur.fetchall()
     cur.close()
@@ -83,7 +93,8 @@ def get_steps():
 @app.route('/allergens', methods=['GET'])
 def get_allergens():
     # Create a cursor
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    db = get_db()
+    cur = db.cursor()
     cur.execute("SELECT * FROM allergens")
     allergens = cur.fetchall()
     cur.close()
@@ -93,7 +104,8 @@ def get_allergens():
 @app.route('/reviews', methods=['GET'])
 def get_reviews():
     # Create a cursor
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    db = get_db()
+    cur = db.cursor()
     cur.execute("SELECT * FROM reviews")
     reviews = cur.fetchall()
     cur.close()
@@ -103,7 +115,8 @@ def get_reviews():
 @app.route('/review_helpfuls', methods=['GET'])
 def get_review_helpfuls():
     # Create a cursor
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    db = get_db()
+    cur = db.cursor()
     cur.execute("SELECT * FROM reviewHelpfuls")
     review_helpfuls = cur.fetchall()
     cur.close()
@@ -113,7 +126,8 @@ def get_review_helpfuls():
 @app.route('/ratings', methods=['GET'])
 def get_ratings():
     # Create a cursor
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    db = get_db()
+    cur = db.cursor()
     cur.execute("SELECT * FROM ratings")
     ratings = cur.fetchall()
     cur.close()
@@ -128,14 +142,15 @@ def register():
     password = data['password']
     password = generate_password_hash(password)
 
-    cur = conn.cursor()
+    db = get_db()   
+    cur = db.cursor()
     if check_user_exists(cur, username):
         return jsonify({'message': 'Username is already used.', 'success': False})
     else:
         inserted_user_id = insert_new_user(cur, username, password)
         session_token = create_session(cur, inserted_user_id)
 
-    conn.commit()
+    db.commit()
     cur.close()
     return jsonify({'session_token': session_token, 'success': True})
 
@@ -144,7 +159,8 @@ def login():
     data = json.loads(request.data)
     username = data['username']
     password = data['password']
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
 
     if not check_user_exists(cur, username):
         return jsonify({'message': 'Wrong username/password', 'success': False})
@@ -153,7 +169,7 @@ def login():
         return jsonify({'message': 'Wrong username/password', 'success': False})
     
     session_token = create_session(cur, get_user(cur, username))
-    conn.commit()
+    db.commit()
     cur.close()
     return jsonify({'session_token': session_token, 'success': True})
 
@@ -162,7 +178,8 @@ def logged_in():
     data = json.loads(request.data)
     username = data['username']
     session_token = data['session_token']
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
 
     if not check_user_exists(cur, username):
         print(f"{username} does not exist.")
@@ -181,14 +198,13 @@ def logged_in():
 def get_bio():
     data = json.loads(request.data)
     username = data['username']
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
 
     if not check_user_exists(cur, username):
         return jsonify({'success': False})
     
     bio = get_user_bio(cur, username)
-    cur.close()
-
     return jsonify({'success': True, 'bio': bio})
 
 @app.route("/set_bio", methods=['POST'])
@@ -198,7 +214,8 @@ def set_bio():
     editor = data['editor']
     bio = data['bio']
     session_token = data['session_token']
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
 
     # check if user is logged in
     if not check_user_exists(cur, profile_owner) or not check_user_exists(cur, editor):
@@ -212,13 +229,14 @@ def set_bio():
         return jsonify({'success': False})
     
     update_bio(cur, get_user(cur, profile_owner), bio)
-    conn.commit()
+    db.commit()
     cur.close()
     return jsonify({'success': True})
 
 @app.route("/create_recipe", methods=['POST'])
 def create_recipe():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     data = json.loads(request.data)
     chef_id = get_user(cur, data["username"])
     title = data["title"]
@@ -227,80 +245,79 @@ def create_recipe():
 
     sql_insert = """
     INSERT INTO recipes (chef_id, title, cuisine, is_public)
-    VALUES (%s, %s, %s, %s)
-    RETURNING id
+    VALUES (%s, %s, %s, %s);
     """
 
     cur.execute(sql_insert, (chef_id, title, cuisine, is_public,))
-    recipe_id = cur.fetchone()[0]
-    conn.commit()
+    recipe_id = cur.lastrowid
+    db.commit()
     cur.close()
     return {'success': True, 'recipe_id': recipe_id}
 
 @app.route("/create_ingredient", methods=['POST'])
 def create_ingredient():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
     name = data["name"]
 
     sql_insert = """
     INSERT INTO ingredients (recipe_id, name)
-    VALUES (%s, %s)
-    RETURNING id
+    VALUES (%s, %s);
     """
 
     cur.execute(sql_insert, (recipe_id, name,))
-    ingredient_id = cur.fetchone()[0]
-    conn.commit()
+    ingredient_id = cur.lastrowid
+    db.commit()
     cur.close()
     return {'success': True, 'ingredient_id': ingredient_id}
 
 @app.route("/create_step", methods=['POST'])
 def create_step():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
     html = data["html"]
 
     sql_insert = """
     INSERT INTO steps (recipe_id, html)
-    VALUES (%s, %s)
-    RETURNING id
+    VALUES (%s, %s);
     """
 
     cur.execute(sql_insert, (recipe_id, html,))
-    conn.commit()
+    db.commit()
     cur.close()
     return {'success': True}
 
 @app.route("/create_allergen", methods=['POST'])
 def create_allergen():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
     name = data["name"]
 
     sql_insert = """
     INSERT INTO allergens (recipe_id, name)
-    VALUES (%s, %s)
-    RETURNING id
+    VALUES (%s, %s);
     """
 
     cur.execute(sql_insert, (recipe_id, name,))
-    conn.commit()
+    db.commit()
     cur.close()
     return {'success': True}
 
 @app.route("/get_user_recipes", methods=['POST'])
 def get_all_user_recipes():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     data = json.loads(request.data)
     username = data["username"]
     user_id = get_user(cur, username) # get user id from username
     get_only_public = data["get_only_public"]
 
-    print(get_only_public)
     query = "SELECT * FROM recipes WHERE chef_id = %s"
     if get_only_public:
         query = "SELECT * FROM recipes WHERE chef_id = %s AND is_public = true"
@@ -312,7 +329,8 @@ def get_all_user_recipes():
 
 @app.route("/get_recipe_by_id", methods=['POST'])
 def get_recipe_by_id():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     sql_select = """
     SELECT * FROM recipes 
     WHERE id = %s
@@ -327,7 +345,8 @@ def get_recipe_by_id():
 
 @app.route("/get_recipe_ingredients", methods=['POST'])
 def get_recipe_ingredients():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     sql_select = """
     SELECT * FROM ingredients 
     WHERE recipe_id = %s
@@ -342,7 +361,8 @@ def get_recipe_ingredients():
 
 @app.route("/get_recipe_allergens", methods=['POST'])
 def get_recipe_allergens():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     sql_select = """
     SELECT * FROM allergens
     WHERE recipe_id = %s
@@ -357,7 +377,8 @@ def get_recipe_allergens():
 
 @app.route("/get_recipe_steps", methods=['POST'])
 def get_recipe_steps():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     sql_select = """
     SELECT * FROM steps
     WHERE recipe_id = %s
@@ -372,7 +393,8 @@ def get_recipe_steps():
 
 @app.route("/get_recipe_reviews", methods=['POST'])
 def get_recipe_reviews():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     sql_select = """
     SELECT reviews.id, reviews.user_id, username, body
     FROM reviews
@@ -390,7 +412,8 @@ def get_recipe_reviews():
 
 @app.route("/owns_recipe", methods=['POST'])
 def owns_recipe():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     data = json.loads(request.data)
     username = data["username"]
     recipe_id = data["recipe_id"]
@@ -405,7 +428,8 @@ def owns_recipe():
 
 @app.route("/create_review", methods=['POST'])
 def create_review():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
     review_body = data["review_body"]
@@ -417,13 +441,14 @@ def create_review():
     # delete existing review for this recipe by user
     delete_review(cur, recipe_id, user_id)
     create_review(cur, recipe_id, user_id, review_body)
-    conn.commit()
+    db.commit()
     cur.close()
     return {'success': True}
 
 @app.route("/mark_helpful", methods=['POST'])
 def mark_helpful():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     data = json.loads(request.data)
     review_id = data["review_id"]
     username = data["username"]
@@ -435,13 +460,14 @@ def mark_helpful():
     # delete existing review for this recipe by user
     delete_review_helpful(cur, review_id, user_id)
     create_review_helpful(cur, review_id, user_id, helpful)
-    conn.commit()
+    db.commit()
     cur.close()
     return {'success': True}
 
 @app.route("/get_review_helpful_counts", methods=['POST'])
 def get_review_helpful_counts():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     helpful_select = """
     SELECT id FROM reviewHelpfuls WHERE review_id = %s AND helpful = TRUE
     """
@@ -460,7 +486,8 @@ def get_review_helpful_counts():
 
 @app.route("/submit_rating", methods=['POST'])
 def submit_rating():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
     username = data["username"]
@@ -474,7 +501,7 @@ def submit_rating():
     delete_rating(cur, recipe_id, user_id)
     create_rating(cur, recipe_id, user_id, rating)
 
-    conn.commit()
+    db.commit()
     cur.close()
     return {'success': True}
 
@@ -488,7 +515,8 @@ def get_average_rating():
     GROUP BY r.id;
     """
 
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
     cur.execute(sql_select, (recipe_id,))
@@ -499,7 +527,8 @@ def get_average_rating():
 
 @app.route("/delete_ingredients_steps_allergens", methods=['POST'])
 def delete_ingredients_steps_allergens():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
 
@@ -520,13 +549,14 @@ def delete_ingredients_steps_allergens():
             WHERE recipe_id = %s
                 """
     cur.execute(sql_delete, (recipe_id,)) 
-    conn.commit()
+    db.commit()
     cur.close()
     return {"success": True}
 
 @app.route("/rewrite_title_and_cuisine", methods=['POST'])
 def rewrite_title_and_cuisine():
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
     data = json.loads(request.data)
     recipe_id = data["recipe_id"]
     title = data["title"]
@@ -538,20 +568,20 @@ def rewrite_title_and_cuisine():
                 WHERE id = %s
                  """
     cur.execute(sql_update, (title, cuisine, recipe_id,)) 
-    conn.commit()
+    db.commit()
     cur.close()
     return {"success": True}
 
 def check_user_exists(cur, username):
-    query = sql.SQL("SELECT 1 FROM users WHERE username = {}").format(sql.Literal(username))
-    cur.execute(query)
+    query = "SELECT 1 FROM users WHERE username = %s"
+    cur.execute(query, (username,))
 
     user_exists = cur.fetchone() is not None
     return user_exists
 
 def check_password(cur, username, login_password):
-    query = sql.SQL("SELECT password FROM users WHERE username = {}").format(sql.Literal(username))
-    cur.execute(query)
+    query = "SELECT password FROM users WHERE username = %s"
+    cur.execute(query, (username,))
 
     database_password = cur.fetchone()[0]
     return check_password_hash(database_password, login_password)
@@ -560,11 +590,10 @@ def insert_new_user(cur, username, password):
     BLANK_BIO = ""
     sql_insert = """
     INSERT INTO users (username, password, bio)
-    VALUES (%s, %s, %s)
-    RETURNING id
+    VALUES (%s, %s, %s);
     """
     cur.execute(sql_insert, (username, password, BLANK_BIO,))
-    inserted_user_id = cur.fetchone()[0]
+    inserted_user_id = cur.lastrowid
     return inserted_user_id
 
 def delete_review(cur, recipe_id, user_id):
@@ -577,11 +606,11 @@ def delete_review(cur, recipe_id, user_id):
 def create_review(cur, recipe_id, user_id, review_body):
     sql_insert = """
     INSERT INTO reviews (recipe_id, user_id, body)
-    VALUES (%s, %s, %s)
-    RETURNING id
+    VALUES (%s, %s, %s);
+
     """
     cur.execute(sql_insert, (recipe_id, user_id, review_body,))
-    return cur.fetchone()[0]
+    return cur.lastrowid
 
 def delete_review_helpful(cur, review_id, user_id):
     sql_delete = """
@@ -593,11 +622,10 @@ def delete_review_helpful(cur, review_id, user_id):
 def create_review_helpful(cur, review_id, user_id, helpful):
     sql_insert = """
     INSERT INTO reviewHelpfuls (review_id, user_id, helpful)
-    VALUES (%s, %s, %s)
-    RETURNING id
+    VALUES (%s, %s, %s);
     """
     cur.execute(sql_insert, (review_id, user_id, helpful,))
-    return cur.fetchone()[0]
+    return cur.lastrowid
 
 def delete_rating(cur, recipe_id, user_id):
     sql_delete = """
@@ -609,11 +637,10 @@ def delete_rating(cur, recipe_id, user_id):
 def create_rating(cur, recipe_id, user_id, rating):
     sql_insert = """
     INSERT INTO ratings (recipe_id, user_id, rating)
-    VALUES (%s, %s, %s)
-    RETURNING id
+    VALUES (%s, %s, %s);
     """
     cur.execute(sql_insert, (recipe_id, user_id, rating,))
-    return cur.fetchone()[0]
+    return cur.lastrowid
 
 def get_user(cur, username):
     sql_insert = """
@@ -631,8 +658,9 @@ def get_user_bio(cur, username):
     WHERE username = %s
     """
     cur.execute(sql_insert, (username,))
-    user_bio = cur.fetchone()[0]
-    return user_bio
+    user_bio = cur.fetchone()
+    cur.close()
+    return user_bio[0]
 
 def create_session(cur, inserted_user_id):
     sql_insert = """

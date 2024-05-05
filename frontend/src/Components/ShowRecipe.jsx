@@ -38,26 +38,30 @@ function ShowRecipe() {
     }
 
     async function getRecipe() {
-        // recipes are an array: [is, chef_id, title, cusine, is_public]
+        // recipes are an array: [id, chef_id, title, cuisine, isPublic]
         let recipe = await axios.post("http://localhost:5000/get_recipe_by_id", {
             id: id,
         });
+
         if (recipe["data"]["success"]) {
             setRecipe(recipe["data"]["recipe"])
+            console.log(recipe["data"]["recipe"])
             return recipe["data"]["recipe"][4] // return whether or not this is private
         }
     }
 
     async function getIngredients() {
-        // ingredients are an array: [id, recipe_id, name]
+        // ingredients are an array: [id, name, recipe_id]
         let ingredients = await axios.post("http://localhost:5000/get_recipe_ingredients", {
             recipe_id: id,
         });
+
+        console.log(ingredients["data"]["ingredients"])
         if (ingredients["data"]["success"]) setIngredients(ingredients["data"]["ingredients"])
     }
 
     async function getAllergens() {
-        // allergens are an array: [id, recipe_id, name]
+        // allergens are an array: [id, name, recipe_id]
         let allergens = await axios.post("http://localhost:5000/get_recipe_allergens", {
             recipe_id: id,
         });
@@ -65,7 +69,7 @@ function ShowRecipe() {
     }
 
     async function getSteps() {
-        // allergens are an array: [id, recipe_id, html]
+        // allergens are an array: [id, html, recipe_id,]
         let steps = await axios.post("http://localhost:5000/get_recipe_steps", {
             recipe_id: id,
         });
@@ -73,7 +77,7 @@ function ShowRecipe() {
     }
 
     async function getReviews() {
-        // reviews are an array: [id, recipe_id, user_id, body]
+        // reviews are an array: [id, body, recipe_id, user_id,]
         let reviews = await axios.post("http://localhost:5000/get_recipe_reviews", {
             recipe_id: id,
         });
@@ -113,8 +117,8 @@ function ShowRecipe() {
         let recipeId = result["data"]["recipe_id"]
         // create ingredient entries
         for (let ing of ingredients) {
-            // ingredients is an array [id, recipe_id, name]
-            let ingName  = ing[2]
+            // ingredients is an array [id, name, recipe_id]
+            let ingName = ing[1]
             result = await axios.post("http://localhost:5000/create_ingredient", {
                 recipe_id: recipeId,
                 name: ingName
@@ -123,19 +127,19 @@ function ShowRecipe() {
 
         // create step entries
         for (let i = 0; i < steps.length; i++) {
-            // steps is an array [id, recipe_id, html]
+            // steps is an array [id, html, recipe_id]
             result = await axios.post("http://localhost:5000/create_step", {
                 recipe_id: recipeId,
-                html: steps[i][2],
+                html: steps[i][1],
             });
         }
 
         // create allergen entries
         for (let i = 0; i < allergens.length; i++) {
-            // allergens is an array [id, recipe_id, name]
+            // allergens is an array [id, name, recipe_id]
             result = await axios.post("http://localhost:5000/create_allergen", {
                 recipe_id: recipeId,
-                name: allergens[i][2],
+                name: allergens[i][1],
             });
         }
         
@@ -171,16 +175,16 @@ function ShowRecipe() {
             <h2>Ingredients</h2>
             <ul>
                 {ingredients.map((ingredient) => (
-                    // ingredient[2] is the ingredient name
-                    <li>{ingredient[2]}</li>
+                    // ingredient[1] is the ingredient name
+                    <li>{ingredient[1]}</li>
                 ))}
             </ul>
 
             <h2>Allergens</h2>
             <ul>
                 {allergens.map((allergen) => (
-                    // allergen[2] is the allergen name
-                    <li>{allergen[2]}</li>
+                    // allergen[1] is the allergen name
+                    <li>{allergen[1]}</li>
                 ))}
             </ul>
 
@@ -188,7 +192,7 @@ function ShowRecipe() {
             <ol className="stepList">
                 {steps.map((step) => (
                     // step[2] is the html
-                    <li dangerouslySetInnerHTML={{ __html: step[2] }} />
+                    <li dangerouslySetInnerHTML={{ __html: step[1] }} />
                 ))}
             </ol>
 
