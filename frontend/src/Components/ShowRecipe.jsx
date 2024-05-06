@@ -180,7 +180,7 @@ function ShowRecipe() {
 
     return(
         <div className="show-recipe-container">
-            <div> 
+            <div className="show-recipe-button-container"> 
                 <h1>{recipe[2]}</h1>
                 <h3>{`Cuisine: ${recipe[3]}`}</h3>
                 <h3>Rating: {averageRating} </h3>
@@ -193,8 +193,8 @@ function ShowRecipe() {
             rating={rating} 
             setRating={setRating} />
             </div>
-            <div>
-                <h2>Ingredients</h2>
+            <div className="show-recipe-info-container">
+                <h2>Ingredients:</h2>
                 <ul>
                     {ingredients.map((ingredient) => (
                         // ingredient[1] is the ingredient name
@@ -202,14 +202,14 @@ function ShowRecipe() {
                     ))}
                 </ul>
 
-                <h2>Allergens</h2>
+                <h2>Allergens:</h2>
                 <ul>
                     {allergens.map((allergen) => (
                         // allergen[1] is the allergen name
                         <li>{allergen[1]}</li>
                     ))}
                 </ul>
-                <h2>Steps</h2>
+                <h2>Steps:</h2>
                 <ol className="stepList">
                     {steps.map((step) => (
                         // step[2] is the html
@@ -217,7 +217,7 @@ function ShowRecipe() {
                     ))}
                 </ol>
             </div>
-            <div>
+            <div className="show-recipe-review-container">
                 <h2>Reviews</h2>
                 <div>
                     {reviews.map((review) => (

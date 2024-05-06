@@ -39,7 +39,10 @@ function AddReview(props) {
 
     return(
         <div className={showAddReview}>
-            {getReviewInput()}
+            <div>
+                {getReviewInput()}
+            </div>
+            
             <button onClick={() => submitReview()}>Submit Review</button>
         </div>
     )

@@ -8,18 +8,67 @@
     padding-left: 25px;
 }
 
-button {
-    border-radius:10px;
+.show-recipe-button-container {
+    margin-right: 50px;
+}
+
+.show-recipe-button-container button {
+    border-radius: 10px;
     margin-top: 7px;
     border: none;
     padding: 5px;
+    margin: 5px;
     padding-right: 10px;
     padding-left: 10px;
     color: black;
     background-color: burlywood;
 }
 
-button:hover {
+.show-recipe-button-container button:hover {
+    filter: brightness(85%);
+    cursor: pointer;
+    transition: all ease-in-out .5s;
+}
+
+.show-recipe-info-container {
+    margin-right: 50px;
+}
+
+.show-recipe-info-container h2 {
+    text-decoration: underline;
+}
+
+.show-recipe-review-container div div div button {
+    border-radius: 10px;
+    margin-top: 7px;
+    border: none;
+    padding: 5px;
+    margin: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
+    color: black;
+    background-color: burlywood;
+}
+
+.show-recipe-review-container div div div button:hover {
+    filter: brightness(85%);
+    cursor: pointer;
+    transition: all ease-in-out .5s;
+}
+
+.visible button {
+    border-radius: 10px;
+    margin-top: 7px;
+    border: none;
+    padding: 5px;
+    margin: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
+    color: black;
+    background-color: burlywood;
+}
+
+.visible button:hover {
     filter: brightness(85%);
     cursor: pointer;
     transition: all ease-in-out .5s;
