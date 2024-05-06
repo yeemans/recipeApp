@@ -114,7 +114,7 @@ function Profile() {
                 ))}
             </div>
 
-            <h1>Collaborating On Recipes</h1>
+            <h1>Collaborations</h1>
             <div>
                 {collabRecipes.map((recipe) => (
                     // recipe[0] is the recipeId, recipe[2] is the title
