@@ -1,30 +1,75 @@
-a {
-    text-decoration: none;
-    color:beige;
+.profile-container {
+    height: 90vh;
+    width: 100%;
+    background-position: center;
+    display: flex;
+    padding-top: 25px;
+    padding-right: 25px;
+    padding-left: 25px;
 }
 
-a:visited {
-    color:rgb(183, 235, 255)
+.profile-name-container {
+    padding-right: 150px;
+    border-right: 2px solid black;
 }
 
-a:hover {
-    color:rgb(203, 255, 203);
+.profile-name {
 }
 
+.bio-container {
+    padding-top: 25px;
+}
 
-button {
+.bio-text p {
+    overflow: hidden;
+    color: black;
+}
+
+.visible {
+    display: inherit;
+    padding-top: 10px;
+}
+
+.bio-container button {
+    margin-top: 7px;
+    border: none;
+    padding: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
+    border-radius:10px;
+    color: black;
     background-color: burlywood;
-    border-radius:10cm;
 }
 
-button:hover {
-    background-color: beige;
+.bio-container button:hover {
+    filter: brightness(85%);
+    cursor: pointer;
+    transition: all ease-in-out .5s;
 }
 
-h1, h3 {
-    color: burlywood;
+.textbox {
+    width: 150px;
+    height: 75px;
 }
 
-p {
-    color: beige;
+.right-container {
+    padding-left: 25px;
+}
+
+.right-container div a {
+    text-decoration: none;
+    padding-left: 10px;
+    font-size: 24px;
+    font-weight: bold;
+    color: rgb(33, 37, 41);
+}
+
+.right-container div a:hover {
+    cursor: pointer;
+    opacity: .7;
+    text-decoration: underline;
+}
+
+.right-container h1 {
+    text-decoration: underline;
 }

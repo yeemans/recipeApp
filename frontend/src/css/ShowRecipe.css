@@ -1,0 +1,26 @@
+.show-recipe-container {
+    height: 90vh;
+    width: 100%;
+    background-position: center;
+    display: flex;
+    padding-top: 25px;
+    padding-right: 25px;
+    padding-left: 25px;
+}
+
+button {
+    border-radius:10px;
+    margin-top: 7px;
+    border: none;
+    padding: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
+    color: black;
+    background-color: burlywood;
+}
+
+button:hover {
+    filter: brightness(85%);
+    cursor: pointer;
+    transition: all ease-in-out .5s;
+}

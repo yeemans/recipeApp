@@ -92,19 +92,34 @@ function Profile() {
             setSavedRecipes(result["data"]["recipes"])
     }
     return(
-        <div>
-            <h1>{username}</h1>
-            <div>
-                <h3>Biography</h3>
-                <p>{bio}</p>
-                {editBioButton()}
-                <div className={editingBio}>
-                    <textarea value={bio} onChange={(e) => setBio(e.target.value)}></textarea>
-                    <button onClick={() => submitBio()}>Save Edit</button>
+        <div className='profile-container'>
+            <div className='profile-name-container'>
+                <h1 className='profile-name'>{username}</h1>
+                <div className='bio-container'>
+                    <div>
+                        <h2>Biography:</h2>
+                        <div className='bio-text'>
+                            <p>{bio}</p>
+                        </div>
+                        
+                        {editBioButton()}
+                    </div>
+
+                    <div className={editingBio}>
+                        <div>
+                            <textarea className="textbox" value={bio} onChange={(e) => setBio(e.target.value)}></textarea>
+                        </div>
+                        <button onClick={() => submitBio()}>Save Edit</button>
+                    </div>
+                    <div>
+                        <button onClick={() => logout()}>Log Out</button>
+                    </div>
                 </div>
             </div>
+            <div className='right-container'>
+            
 
-            <h1>Recipes</h1>
+            <h1>Recipes:</h1>
             <div>
                 {recipes.map((recipe) => (
                     // recipe[0] is the recipeId, recipe[2] is the title
@@ -114,7 +129,7 @@ function Profile() {
                 ))}
             </div>
 
-            <h1>Collaborations</h1>
+            <h1>Collaborations:</h1>
             <div>
                 {collabRecipes.map((recipe) => (
                     // recipe[0] is the recipeId, recipe[2] is the title
@@ -125,7 +140,7 @@ function Profile() {
             </div>
             
 
-            <h1>Saved Recipes</h1>
+            <h1>Saved Recipes:</h1>
             <div>
                 {savedRecipes.map((recipe) => (
                     // recipe[0] is the recipeId, recipe[2] is the title
@@ -135,10 +150,9 @@ function Profile() {
                 
                 ))}
             </div>
-    <br></br>
-            <div>
-                <button onClick={() => logout()}>Log Out</button>
             </div>
+
+    <br></br>
         </div>
     )
 }

@@ -4,6 +4,7 @@ import AddReview from "./AddReview.jsx";
 import axios from "axios";
 import Review from "./Review.jsx";
 import RatingSlider from "./RatingSlider.jsx";
+import '../css/ShowRecipe.css'
 
 function ShowRecipe() {
     const navigate = useNavigate();
@@ -178,7 +179,7 @@ function ShowRecipe() {
     }
 
     return(
-        <div>
+        <div className="show-recipe-container">
             <div> 
                 <h1>{recipe[2]}</h1>
                 <h3>{`Cuisine: ${recipe[3]}`}</h3>
@@ -187,45 +188,46 @@ function ShowRecipe() {
                 {getEditButton()}
                 {getSaveButton()}
                 <button onClick={() => addCollaborator()}>Add Collaborator</button>
-            </div>
-            <RatingSlider username={localStorage.getItem("recipeAppUsername")}
+                <RatingSlider username={localStorage.getItem("recipeAppUsername")}
             recipeId={id} 
             rating={rating} 
             setRating={setRating} />
-
-            <h2>Ingredients</h2>
-            <ul>
-                {ingredients.map((ingredient) => (
-                    // ingredient[1] is the ingredient name
-                    <li>{ingredient[1]}</li>
-                ))}
-            </ul>
-
-            <h2>Allergens</h2>
-            <ul>
-                {allergens.map((allergen) => (
-                    // allergen[1] is the allergen name
-                    <li>{allergen[1]}</li>
-                ))}
-            </ul>
-
-            <h2>Steps</h2>
-            <ol className="stepList">
-                {steps.map((step) => (
-                    // step[2] is the html
-                    <li dangerouslySetInnerHTML={{ __html: step[1] }} />
-                ))}
-            </ol>
-
-            <h2>Reviews</h2>
-            <div>
-                {reviews.map((review) => (
-                    // reviews are an array [review id, user_id, username, body]
-                    <Review review={review} />
-                ))}
             </div>
+            <div>
+                <h2>Ingredients</h2>
+                <ul>
+                    {ingredients.map((ingredient) => (
+                        // ingredient[1] is the ingredient name
+                        <li>{ingredient[1]}</li>
+                    ))}
+                </ul>
 
-            <AddReview id={id} title={recipe[2]} />
+                <h2>Allergens</h2>
+                <ul>
+                    {allergens.map((allergen) => (
+                        // allergen[1] is the allergen name
+                        <li>{allergen[1]}</li>
+                    ))}
+                </ul>
+                <h2>Steps</h2>
+                <ol className="stepList">
+                    {steps.map((step) => (
+                        // step[2] is the html
+                        <li dangerouslySetInnerHTML={{ __html: step[1] }} />
+                    ))}
+                </ol>
+            </div>
+            <div>
+                <h2>Reviews</h2>
+                <div>
+                    {reviews.map((review) => (
+                        // reviews are an array [review id, user_id, username, body]
+                        <Review review={review} />
+                    ))}
+                </div>
+
+                <AddReview id={id} title={recipe[2]} />
+            </div>
         </div>
     )
 
