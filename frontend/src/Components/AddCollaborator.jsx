@@ -1,6 +1,7 @@
 import {useState, useEffect} from "react"
 import {useParams, useNavigate} from "react-router-dom"
 import axios from "axios"
+import '../css/AddCollaborator.css'
 
 function AddCollaborator() {
     const [collaborator, setCollaborator] = useState("");
@@ -33,15 +34,23 @@ function AddCollaborator() {
     }
 
     return(
-        <div>
-            <p>{message}</p>
-            <p>Username of collaborator to add:</p>
-            <input type="text" 
-            value={collaborator} 
-            onChange={(e) => setCollaborator(e.target.value)} />
+        <div className="collaborator-container">
+            <div className="collaborator-container-box">
+                <p>{message}</p>
+                <input type="text" 
+                className="search-box"
+                placeholder="Username of Collaborator to Search"
+                value={collaborator} 
+                onChange={(e) => setCollaborator(e.target.value)} />
 
-            <button onClick={() => createCollab()}>Create Collab</button>
+                <div className="search-button-container">
+                    <button className="search-button" onClick={() => createCollab()}>Create Collab</button>
+                </div>
+               
+            </div>
+            
         </div>
+
     )
 }
 

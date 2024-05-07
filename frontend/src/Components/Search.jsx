@@ -1,5 +1,7 @@
 import { useState } from "react";
 import axios from "axios"
+import '../css/Search.css'
+
 function Search() {
     const [results, setResults] = useState([]);
     const [query, setQuery] = useState("");
@@ -15,17 +17,23 @@ function Search() {
     }
 
     return (
-        <div>
-            <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} />
-            <p> </p>
-            <button onClick={() => submitSearch()}>Search</button>
-
-            {results.map((recipe) => (
-                // recipe[0] is the recipeId, recipe[2] is the title
-                <div>
-                    <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a>
+        <div className="search-container">
+            <div className="search-container-box">
+                <input className="search-box" placeholder="Seach a Recipe" type="text" value={query} onChange={(e) => setQuery(e.target.value)} />
+                <p> </p>
+                <div className="search-button-container">
+                    <button className="search-button" onClick={() => submitSearch()}>Search</button>
                 </div>
-            ))}
+               
+
+                {results.map((recipe) => (
+                    // recipe[0] is the recipeId, recipe[2] is the title
+                    <div className="search-result-container">
+                        <a href={`/recipes/${recipe[0]}`}>{recipe[2]}</a>
+                    </div>
+                ))}
+            </div>
+            
         </div>
     )
 }

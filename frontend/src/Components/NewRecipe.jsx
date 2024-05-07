@@ -1,6 +1,7 @@
 import {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import '../css/NewRecipe.css'
 
 function NewRecipe() {
     const [title, setTitle] = useState("");
@@ -226,112 +227,120 @@ function NewRecipe() {
     }
 
     return(
-        <div>
-            <label htmlFor="title">Title: </label>
-            <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
-            <p></p>
-            <label htmlFor="cuisine">Cuisine: </label>
-            <input type="text" id="cuisine" value={cuisine} onChange={(e) => setCuisine(e.target.value)} />
-            <p></p>
-            <div className={ingredientEditorVisible}>
-                <h1>Ingredients</h1>
-                <input type="text" value={ingredient} onChange={(e) => setIngredient(e.target.value)} />
-                {getIngredientButton()}
-            </div>
-
-            <div className={allergenEditorVisible}>
-                <h1>Allergens (If Applicable)</h1>
-                <input type="text" value={allergen} onChange={(e) => setAllergen(e.target.value)} />
-                {getAllergenButton()}
-            </div>
-            
-            <div className={stepEditorVisible}>
-                <h1>Step</h1>
-                <textarea value={currStep} onChange={(e) => setCurrStep(e.target.value)} />
-                {getStepButton()}
-
-                <button onClick={() => promptImageLink()}>Link Image</button>
-                <p>Images linked in this step:</p>
-                <ul>
-                    {currStepImageLinks.map((imageLink, index) => (
-                        <div>
-                            <li>{imageLink}</li>
-                            <button onClick={() => deleteImageLink(index)}>Delete Image</button>
-                        </div>
-                    ))}
-                </ul>
-            </div>
-            
-            <div> 
-                <h1>Recipe Preview</h1>
-                <h1>{cuisine} {title}</h1>
-
-                <h1>Ingredients</h1>
-                <ul>
-                    {ingredients.map((ingredientName, index) => (
-                        <div>
-                            <li>{ingredientName}</li> 
-                            <button onClick={() => enableModifyIngredient(ingredientName, index)}>
-                                Edit Ingredient
-                            </button>
-                        </div>
-                    ))}
-                </ul>
-
-                <button onClick={() => toggleIngredientEditor()}>Toggle Ingredient Editor</button>
-
-                <h1>Allergens</h1>
-                <ul>
-                    {allergens.map((allergenName, index) => (
-                        <div>
-                            <li>{allergenName}</li>
-                            <button onClick={() => enableModifyAllergen(allergenName, index)}>
-                                Edit Allergen
-                            </button>
-                        </div>
-                    ))}
-                </ul>
-
-                <button onClick={() => toggleAllergenEditor()}>Toggle Allergen Editor</button>
-
-                <h1>Steps</h1>
-                <ol>
-                    {steps.map((step, stepIndex) => (
-                        <li>
-                            <div key={stepIndex}> {/* Wrap the content in a parent element */}
-                                <p>{step}</p>
-                                <button onClick={() => enableModifyStep(step, stepIndex)}>
-                                    Edit Step
-                                </button>
-
-                                {/* Iterate through the images of this step and render them */}
-                                {stepImageLinks[stepIndex].map((imageLink, imageIndex) => (
-                                    <img className="stepImage" key={imageIndex} src={imageLink} alt={`Step ${stepIndex + 1} Image ${imageIndex + 1}`} />
-                                ))}
-                            </div>
-                        </li>
-                    ))}
-                </ol>
-
-                <button onClick={() => toggleStepEditor()}>Toggle Step Editor</button>
+        <div className="profile-container">
+            <div className="recipe-name-container">
+                <div>
+                    <label className="input-title" htmlFor="title">Title: </label>
+                </div>
+                <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
                 <p></p>
+                <div>
+                    <label className="input-title" htmlFor="cuisine">Cuisine: </label>
+                </div>
+                <input type="text" id="cuisine" value={cuisine} onChange={(e) => setCuisine(e.target.value)} />
+                <p></p>
+                <div>
+                    <label className="make-public-text">
+                        <input
+                            
+                            type="checkbox"
+                            checked={isPublic}
+                            onChange={handleIsPublicChange}
+                        />
+                        Make Public 
+                    </label>
+                </div>
+                
+                    <br></br>
+                <div>
+                    <button className="new-recipe-button" onClick={() => submitRecipe()}>Submit Recipe</button>
+                </div>
             </div>
-            
-            <div>
-                <label>
-                    <input
-                        type="checkbox"
-                        checked={isPublic}
-                        onChange={handleIsPublicChange}
-                    />
-                    Make Public 
-                </label>
-            </div>
-            
-                <br></br>
-            <div>
-                <button onClick={() => submitRecipe()}>Submit Recipe</button>
-            </div>
+
+            <div className="right-container">
+                
+                <div> 
+                    <h1>Recipe Preview:</h1>
+                    <h1>{cuisine} {title}</h1>
+
+                    <h1>Ingredients:</h1>
+                    <ul>
+                        {ingredients.map((ingredientName, index) => (
+                            <div>
+                                <li>{ingredientName}</li> 
+                                <button className="new-recipe-button" onClick={() => enableModifyIngredient(ingredientName, index)}>
+                                    Edit Ingredient
+                                </button>
+                            </div>
+                        ))}
+                    </ul>
+                    <div className={ingredientEditorVisible}>
+                    <input type="text" value={ingredient} onChange={(e) => setIngredient(e.target.value)} />
+                    {getIngredientButton()}
+                </div>
+
+                    <button className="new-recipe-button" onClick={() => toggleIngredientEditor()}>Toggle Ingredient Editor</button>
+
+                    <h1>Allergens:</h1>
+                    <ul>
+                        {allergens.map((allergenName, index) => (
+                            <div>
+                                <li>{allergenName}</li>
+                                <button className="new-recipe-button" onClick={() => enableModifyAllergen(allergenName, index)}>
+                                    Edit Allergen
+                                </button>
+                            </div>
+                        ))}
+                    </ul>
+
+
+                    <div className={allergenEditorVisible}>
+                    <input type="text" value={allergen} onChange={(e) => setAllergen(e.target.value)} />
+                    {getAllergenButton()}
+                </div>
+                    <button className="new-recipe-button" onClick={() => toggleAllergenEditor()}>Toggle Allergen Editor</button>
+
+                    <h1>Steps:</h1>
+                    <ol>
+                        {steps.map((step, stepIndex) => (
+                            <li>
+                                <div key={stepIndex}> {/* Wrap the content in a parent element */}
+                                    <p>{step}</p>
+                                    <button className="new-recipe-button" onClick={() => enableModifyStep(step, stepIndex)}>
+                                        Edit Step
+                                    </button>
+
+                                    {/* Iterate through the images of this step and render them */}
+                                    {stepImageLinks[stepIndex].map((imageLink, imageIndex) => (
+                                        <img className="stepImage" key={imageIndex} src={imageLink} alt={`Step ${stepIndex + 1} Image ${imageIndex + 1}`} />
+                                    ))}
+                                </div>
+                            </li>
+                        ))}
+                    </ol>
+
+                    <div className={stepEditorVisible}>
+                    <textarea value={currStep} onChange={(e) => setCurrStep(e.target.value)} />
+                    {getStepButton()}
+
+                    <button className="new-recipe-button" onClick={() => promptImageLink()}>Link Image</button>
+                    <p>Images linked in this step:</p>
+                    <ul>
+                        {currStepImageLinks.map((imageLink, index) => (
+                            <div>
+                                <li>{imageLink}</li>
+                                <button className="new-recipe-button" onClick={() => deleteImageLink(index)}>Delete Image</button>
+                            </div>
+                        ))}
+                    </ul>
+                </div>
+                    <button className="new-recipe-button" onClick={() => toggleStepEditor()}>Toggle Step Editor</button>
+                    <p></p>
+                </div>
+                </div>
+
+
+
 
             
         </div>

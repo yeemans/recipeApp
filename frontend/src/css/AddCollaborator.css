@@ -1,0 +1,36 @@
+.collaborator-container {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    height: 90vh;
+}
+
+.collaborator-container-box {
+    justify-content: center;
+    align-content: center;
+}
+
+.input-title {
+    color: black;
+}
+
+.new-recipe-button {
+    margin-top: 7px;
+    border: none;
+    padding: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
+    border-radius:10px;
+    color: black;
+    background-color: burlywood;
+}
+
+.new-recipe-button:hover {
+    filter: brightness(85%);
+    cursor: pointer;
+    transition: all ease-in-out .5s;
+}
+
+.make-public-text {
+    color: black;
+}
