@@ -1,6 +1,7 @@
 import {useState, useEffect} from "react";
 import { useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
+import '../css/EditRecipe.css'
 
 function EditRecipe() {
     let id = useParams()["id"];
@@ -352,47 +353,28 @@ function EditRecipe() {
     }
 
     return(
-        <div>
-            <label htmlFor="title">Recipe Title:</label>
-            <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
+        <div className="edit-recipe-container">
+            <div className="recipe-title-container">
+                <div>
+                    <label className="recipe-title" htmlFor="title">Recipe Title:</label>
+                    
+                </div>
+                <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                <div>
+                    <label className="recipe-title" htmlFor="cuisine">Cuisine:</label>
+                    
+                </div>
+                <input type="text" id="cuisine" value={cuisine} onChange={(e) => setCuisine(e.target.value)} />
+                <div>
+                    <button id="edit-recipe-submit" className="edit-recipe-button" onClick={() => submitRecipe()}>Submit Recipe</button>
+                </div>
+               
+            </div>
            
-            <label htmlFor="cuisine">Cuisine:</label>
-            <input type="text" id="cuisine" value={cuisine} onChange={(e) => setCuisine(e.target.value)} />
+            <div>
 
-            <div className={ingredientEditorVisible}>
-                <h1>Ingredients</h1>
-                <input type="text" value={ingredient} onChange={(e) => setIngredient(e.target.value)} />
-                {getIngredientButton()}
-            </div>
-
-            <div className={allergenEditorVisible}>
-                <h1>Allergens (If Applicable)</h1>
-                <input type="text" value={allergen} onChange={(e) => setAllergen(e.target.value)} />
-                {getAllergenButton()}
-            </div>
             
-            <div className={stepEditorVisible}>
-                <h1>Step</h1>
-                <textarea value={currStep} onChange={(e) => setCurrStep(e.target.value)} />
-                {getStepButton()}
-
-                <button onClick={() => promptImageLink()}>Link Image</button>
-                <p>Images linked in this step:</p>
-                <ul>
-                    {currStepImageLinks.map((imageLink, index) => (
-                        <div>
-                            <li>{imageLink}</li>
-                            <button onClick={() => deleteImageLink(index)}>Delete Image</button>
-                        </div>
-                    ))}
-                </ul>
-            </div>
-
-            <button onClick={() => toggleIngredientEditor()}>Toggle Ingredient Editor</button>
-            <button onClick={() => toggleAllergenEditor()}>Toggle Allergen Editor</button>
-            <button onClick={() => toggleStepEditor()}>Toggle Step Editor</button>
-            
-            <div> 
+            <div className="right-container"> 
                 <h1>Recipe Preview</h1>
                 <h1>{cuisine} {title}</h1>
 
@@ -407,7 +389,12 @@ function EditRecipe() {
                         </div>
                     ))}
                 </ul>
-
+                <div className={ingredientEditorVisible}>
+                <input type="text" value={ingredient} onChange={(e) => setIngredient(e.target.value)} />
+                {getIngredientButton()}
+            </div>
+                <button className="edit-recipe-button" onClick={() => toggleIngredientEditor()}>Toggle Ingredient Editor</button>
+                
                 <h1>Allergens</h1>
                 <ul>
                     {allergens.map((allergenName, index) => (
@@ -419,6 +406,13 @@ function EditRecipe() {
                         </div>
                     ))}
                 </ul>
+
+                <div className={allergenEditorVisible}>
+                <input type="text" value={allergen} onChange={(e) => setAllergen(e.target.value)} />
+                {getAllergenButton()}
+            </div>
+            <button className="edit-recipe-button" onClick={() => toggleAllergenEditor()}>Toggle Allergen Editor</button>
+            
 
                 <h1>Steps</h1>
                 <ol>
@@ -438,10 +432,32 @@ function EditRecipe() {
                         </li>
                     ))}
                 </ol>
+
+
+            <div className={stepEditorVisible}>
+                <textarea value={currStep} onChange={(e) => setCurrStep(e.target.value)} />
+                {getStepButton()}
+
+                <button onClick={() => promptImageLink()}>Link Image</button>
+                <p>Images linked in this step:</p>
+                <ul>
+                    {currStepImageLinks.map((imageLink, index) => (
+                        <div>
+                            <li>{imageLink}</li>
+                            <button onClick={() => deleteImageLink(index)}>Delete Image</button>
+                        </div>
+                    ))}
+                </ul>
             </div>
 
-            <button onClick={() => submitRecipe()}>Submit Recipe</button>
 
+         
+            <button className="edit-recipe-button" onClick={() => toggleStepEditor()}>Toggle Step Editor</button>
+          
+            </div>
+
+            
+            </div>
         </div>
     )
 }

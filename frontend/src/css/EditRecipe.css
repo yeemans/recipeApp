@@ -1,0 +1,41 @@
+.edit-recipe-container {
+    height: 90vh;
+    width: 100%;
+    background-position: center;
+    display: flex;
+    padding-top: 25px;
+    padding-right: 25px;
+    padding-left: 25px;
+}
+
+.recipe-title-container {
+    padding-right: 150px;
+    border-right: 2px solid black;
+}
+
+.recipe-title {
+    color: black;
+    padding-right: 10px;
+}
+
+
+.edit-recipe-button {
+    margin-top: 7px;
+    border: none;
+    padding: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
+    border-radius:10px;
+    color: black;
+    background-color: burlywood;
+}
+
+.edit-recipe-button:hover {
+    filter: brightness(85%);
+    cursor: pointer;
+    transition: all ease-in-out .5s;
+}
+
+#edit-recipe-submit {
+    margin-top: 20px;
+}
