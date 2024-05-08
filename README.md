@@ -23,3 +23,8 @@ First Time Setup (steps 1- 6)
 11. npm i
 12. npm run dev
 13. go to localhost:5173 in the browser.
+
+Division of Work
+    - User Interface Design and CSS: Aaron Nguyen
+    - Database Design and EER Diagram: Matthew Chung
+    - API Endpoints and data fetching: Arthur Roth
