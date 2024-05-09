@@ -1,0 +1,11 @@
+﻿April 2nd 2:00 - 4:00: Crystallizing proposal ideas into a plan, figure out which tools to use
+April 6th 3:00 - 5:00: Working session on Zoom call. Settle on React.js and Flask backend
+April 9th 2:00 - 4:00: Collaborate on creating a user authentication system.
+April 13th 3:00 - 5:00: Finish and test user authentication on Zoom call.
+April 16th 2:00 - 4:00: Add recipe creating functionality to application
+April 20th 3:00 - 5:00: Add ratings and reviews to application on Zoom call collaboration. 
+April 23rd 2:00 - 4:00: Begin adding editing to recipe creation and recipes that belong to user
+April 27th 3:00 - 7:00: Long Zoom call finalizing edits to pages on Zoom call. Add remix feature to application. 
+April 30th 2:00 - 4:00: Add collaboration feature to application. 
+May 4th 3:00 - 5:00 Begin report and draft plans for video recording.
+May 7th 3:00 - 5:00 Finish report and video recording.
